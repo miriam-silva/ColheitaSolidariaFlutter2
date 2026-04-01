@@ -37,7 +37,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
     setState(() => loading = true);
 
-    await Future.delayed(const Duration(seconds: 2)); // simulação API
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() => loading = false);
 
@@ -60,9 +60,6 @@ class _CadastroPageState extends State<CadastroPage> {
         child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-            ),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 bool isMobile = constraints.maxWidth < 768;
@@ -70,14 +67,14 @@ class _CadastroPageState extends State<CadastroPage> {
                 return isMobile
                     ? Column(
                         children: [
-                          _buildHero(),
-                          _buildForm(),
+                          _buildHero(isMobile),
+                          _buildForm(isMobile),
                         ],
                       )
                     : Row(
                         children: [
-                          Expanded(child: _buildHero()),
-                          Expanded(child: _buildForm()),
+                          Expanded(child: _buildHero(isMobile)),
+                          Expanded(child: _buildForm(isMobile)),
                         ],
                       );
               },
@@ -88,16 +85,22 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // 🔴 LADO ESQUERDO
-  Widget _buildHero() {
+  // 🔴 HERO
+  Widget _buildHero(bool isMobile) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(40),
-      decoration: const BoxDecoration(
-        color: Color(0xFFA42525),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          bottomLeft: Radius.circular(30),
-        ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFA42525),
+        borderRadius: isMobile
+            ? const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              )
+            : const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+              ),
       ),
       child: const Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -122,21 +125,28 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // ⚪ LADO DIREITO
-  Widget _buildForm() {
+  // ⚪ FORM
+  Widget _buildForm(bool isMobile) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(30),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
+        borderRadius: isMobile
+            ? const BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              )
+            : const BorderRadius.only(
+                topRight: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
       ),
       child: Column(
         children: [
           // 🔘 TABS
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _tabButton("Administrador", "adm"),
               _tabButton("Colaborador", "colaborador"),
@@ -176,14 +186,17 @@ class _CadastroPageState extends State<CadastroPage> {
 
                 const SizedBox(height: 10),
 
-                ElevatedButton(
-                  onPressed: loading ? null : handleSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA42525),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: Text(
-                    loading ? "Carregando..." : "Cadastrar",
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: loading ? null : handleSubmit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFA42525),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: Text(
+                      loading ? "Carregando..." : "Cadastrar",
+                    ),
                   ),
                 ),
 
@@ -210,27 +223,34 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // 🔘 BOTÃO DE TAB
+  // 🔘 TAB
   Widget _tabButton(String texto, String valor) {
     final isActive = activeTab == valor;
 
-    return Expanded(
-      child: TextButton(
-        onPressed: () {
-          setState(() => activeTab = valor);
-        },
-        child: Text(
-          texto,
-          style: TextStyle(
-            color: isActive ? Colors.red : Colors.grey,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+    return GestureDetector(
+      onTap: () => setState(() => activeTab = valor),
+      child: Column(
+        children: [
+          Text(
+            texto,
+            style: TextStyle(
+              color: isActive ? const Color(0xFFA42525) : Colors.grey,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
-        ),
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 5),
+              height: 3,
+              width: 50,
+              color: const Color(0xFFA42525),
+            )
+        ],
       ),
     );
   }
 
-  // 🔤 INPUT PADRÃO
+  // 🔤 INPUT
   Widget _input(TextEditingController controller, String label,
       {bool obscure = false}) {
     return Padding(
@@ -243,7 +263,7 @@ class _CadastroPageState extends State<CadastroPage> {
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor: Colors.grey[300],
+          fillColor: const Color(0xFFD3D2D2),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
           ),

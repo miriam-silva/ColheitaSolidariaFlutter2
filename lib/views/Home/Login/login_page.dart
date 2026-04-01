@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/LoadingSpinner.dart';
+import '../../../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,33 +10,66 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String activeTab = "Administrador";
+  String activeTab = "colaborador"; 
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
-  final TextEditingController cnpjController = TextEditingController();
-  final TextEditingController chaveController = TextEditingController();
 
   bool loading = false;
   String error = "";
 
+  final AuthService authService = AuthService();
+
+  // 🔐 LOGIN COM FIREBASE
   void handleLogin() async {
+    if (emailController.text.isEmpty || senhaController.text.isEmpty) {
+      setState(() {
+        error = "Preencha todos os campos";
+      });
+      return;
+    }
+
     setState(() {
       loading = true;
       error = "";
     });
 
-    await Future.delayed(const Duration(seconds: 2)); // simulação
+    final result = await authService.loginUser(
+      email: emailController.text,
+      password: senhaController.text,
+    );
 
     setState(() {
       loading = false;
-      error = "Login simulado (integre com API depois)";
     });
+
+    if (result["success"]) {
+      final userData = result["data"];
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login realizado com sucesso!")),
+      );
+
+      // 🔀 REDIRECIONAMENTO PELO ROLE
+      final role = userData["role"];
+
+      if (role == "admin") {
+        Navigator.pushReplacementNamed(context, "/admin");
+      } else if (role == "colaborador") {
+        Navigator.pushReplacementNamed(context, "/colaborador");
+      } else {
+        Navigator.pushReplacementNamed(context, "/recebedor");
+      }
+    } else {
+      setState(() {
+        error = result["error"];
+      });
+    }
   }
 
   void changeTab(String tab) {
     setState(() {
-      activeTab = tab;
+      activeTab = tab.toLowerCase();
       error = "";
     });
   }
@@ -44,158 +78,164 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE8CF9C),
-
       body: Center(
-        child: Container(
-          width: 900,
-          constraints: const BoxConstraints(maxWidth: 1000),
-          margin: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                bool isMobile = constraints.maxWidth < 768;
 
-          child: Row(
-            children: [
-
-              // 🔴 LADO ESQUERDO
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFA42525),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      bottomLeft: Radius.circular(30),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "Bem-vindo de volta à Colheita Solidária!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        "Faça o login e vamos juntos colher frutos de esperança e distribuir solidariedade.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // ⚪ LADO DIREITO
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-
-                      // 🔷 TABS
-                      Wrap(
-                        spacing: 10,
+                return isMobile
+                    ? Column(
                         children: [
-                          _buildTab("Administrador"),
-                          _buildTab("colaborador"),
-                          _buildTab("recebedor"),
+                          _buildHero(isMobile),
+                          _buildForm(isMobile),
                         ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Text(
-                        "Login ${activeTab[0].toUpperCase()}${activeTab.substring(1)}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // ❌ ERRO
-                      if (error.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            error,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-
-                      // 🔄 LOADING (SEU WIDGET)
-                      if (loading)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: LoadingSpinner(size: 60),
-                        ),
-
-                      // 🔶 CAMPOS ADMIN
-                      if (activeTab == "Administrador") ...[
-                        _input(cnpjController, "CNPJ"),
-                        const SizedBox(height: 10),
-                        _input(chaveController, "Chave de Acesso"),
-                        const SizedBox(height: 10),
-                      ],
-
-                      // 🔶 CAMPOS COMUNS
-                      _input(emailController, "E-mail"),
-                      const SizedBox(height: 10),
-                      _input(senhaController, "Senha", isPassword: true),
-
-                      const SizedBox(height: 20),
-
-                      // 🔘 BOTÃO
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: loading ? null : handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFA42525),
-                            padding: const EdgeInsets.all(15),
-                          ),
-                          child: Text(
-                            loading ? "Carregando..." : "Acessar",
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // 🔗 LINKS
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/cadastro");
-                        },
-                        child: const Text("Não possui cadastro? Clique aqui"),
-                      ),
-
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/home");
-                        },
-                        child: const Text("Voltar para início"),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: _buildHero(isMobile)),
+                          Expanded(child: _buildForm(isMobile)),
+                        ],
+                      );
+              },
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // 🔴 HERO
+  Widget _buildHero(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        color: const Color(0xFFA42525),
+        borderRadius: isMobile
+            ? const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              )
+            : const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+              ),
+      ),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Bem-vindo de volta à Colheita Solidária!",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20),
+          Text(
+            "Faça o login e vamos juntos colher frutos de esperança e distribuir solidariedade.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ⚪ FORMULÁRIO
+  Widget _buildForm(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: isMobile
+            ? const BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              )
+            : const BorderRadius.only(
+                topRight: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+
+          // 🔷 TABS
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildTab("admin"),
+              _buildTab("colaborador"),
+              _buildTab("recebedor"),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          Text(
+            "Login ${activeTab.toUpperCase()}",
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          if (error.isNotEmpty)
+            Text(error, style: const TextStyle(color: Colors.red)),
+
+          if (loading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: LoadingSpinner(size: 50),
+            ),
+
+          _input(emailController, "E-mail"),
+          const SizedBox(height: 10),
+          _input(senhaController, "Senha", isPassword: true),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: loading ? null : handleLogin,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA42525),
+                padding: const EdgeInsets.all(15),
+              ),
+              child: Text(
+                loading ? "Carregando..." : "Acessar",
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "/cadastro");
+            },
+            child: const Text("Não possui cadastro? Clique aqui"),
+          ),
+
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "/home");
+            },
+            child: const Text("Voltar para início"),
+          ),
+        ],
       ),
     );
   }
@@ -209,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         children: [
           Text(
-            nome[0].toUpperCase() + nome.substring(1),
+            nome.toUpperCase(),
             style: TextStyle(
               color: isActive ? const Color(0xFFA42525) : Colors.grey,
               fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
@@ -219,7 +259,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               margin: const EdgeInsets.only(top: 5),
               height: 3,
-              width: 50,
+              width: 40,
               color: const Color(0xFFA42525),
             )
         ],
