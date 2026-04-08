@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 // Import das suas páginas
 import 'views/Home/home_page.dart';
@@ -12,7 +14,13 @@ import 'views/Home/colaboradores_page.dart';
 import 'views/Home/comoajudar_page.dart';
 import 'views/Home/contato_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -25,15 +33,12 @@ class MyApp extends StatelessWidget {
       title: 'Colheita Solidária',
       debugShowCheckedModeBanner: false,
 
-      // Tema básico
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
 
-      // Primeira tela do app
       initialRoute: '/home',
 
-      // Rotas do app
       routes: {
         '/login': (context) => const LoginPage(),
         '/cadastro': (context) => const CadastroPage(),

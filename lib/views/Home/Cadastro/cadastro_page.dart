@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../widgets/LoadingSpinner.dart';
 
 class CadastroPage extends StatefulWidget {
@@ -14,7 +16,6 @@ class _CadastroPageState extends State<CadastroPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   final nome = TextEditingController();
   final cnpj = TextEditingController();
   final cpf = TextEditingController();
@@ -25,30 +26,107 @@ class _CadastroPageState extends State<CadastroPage> {
   final senha = TextEditingController();
   final confirmarSenha = TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  bool validarCPF(String cpf) => cpf.length >= 11;
+  bool validarCNPJ(String cnpj) => cnpj.length >= 14;
+
   void handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (senha.text != confirmarSenha.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("As senhas não coincidem!")),
-      );
+      _showError("As senhas não coincidem!");
+      return;
+    }
+
+    final tipo = activeTab == "adm" ? "admin" : "colaborador";
+
+    if (tipo == "admin" && !validarCNPJ(cnpj.text)) {
+      _showError("CNPJ inválido!");
+      return;
+    }
+
+    if (tipo == "colaborador" && !validarCPF(cpf.text)) {
+      _showError("CPF inválido!");
       return;
     }
 
     setState(() => loading = true);
 
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // 🔐 CRIA USUÁRIO NO AUTH
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email.text,
+        password: senha.text,
+      );
 
-    setState(() => loading = false);
+      final user = userCredential.user;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Cadastro realizado com sucesso!")),
+      if (user == null) {
+        throw Exception("Erro ao criar usuário");
+      }
+
+      // 🔥 FORÇA ATUALIZAÇÃO DO TOKEN
+      await user.getIdToken(true);
+
+      // 🔥 PEQUENO DELAY (EVITA ERRO DE PERMISSÃO)
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // 📦 SALVA NO FIRESTORE
+      await _firestore.collection("users").doc(user.uid).set({
+        "nome": nome.text,
+        "email": email.text,
+        "telefone": telefone.text,
+        "endereco": endereco.text,
+        "dataNascimento": dataNascimento.text,
+        "role": tipo,
+        "cnpj": tipo == "admin" ? cnpj.text : null,
+        "cpf": tipo == "colaborador" ? cpf.text : null,
+      });
+
+      setState(() => loading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Cadastro realizado com sucesso!")),
+      );
+
+      Navigator.pushNamed(context, "/login");
+    } on FirebaseAuthException catch (e) {
+      setState(() => loading = false);
+
+      if (e.code == 'email-already-in-use') {
+        _showError("Este email já está cadastrado");
+      } else if (e.code == 'weak-password') {
+        _showError("A senha deve ter pelo menos 6 caracteres");
+      } else if (e.code == 'invalid-email') {
+        _showError("Email inválido");
+      } else {
+        _showError("Erro no cadastro: ${e.message}");
+      }
+    } catch (e) {
+      setState(() => loading = false);
+      _showError("Erro ao salvar no banco de dados");
+    }
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
     );
 
-    if (activeTab == 'adm') {
-      Navigator.pushNamed(context, '/InicialAdministrador');
-    } else {
-      Navigator.pushNamed(context, '/InicialColaborador');
+    if (picked != null) {
+      dataNascimento.text =
+          "${picked.year}-${picked.month}-${picked.day}";
     }
   }
 
@@ -67,14 +145,14 @@ class _CadastroPageState extends State<CadastroPage> {
                 return isMobile
                     ? Column(
                         children: [
-                          _buildHero(isMobile),
-                          _buildForm(isMobile),
+                          _buildHero(),
+                          _buildForm(),
                         ],
                       )
                     : Row(
                         children: [
-                          Expanded(child: _buildHero(isMobile)),
-                          Expanded(child: _buildForm(isMobile)),
+                          Expanded(child: _buildHero()),
+                          Expanded(child: _buildForm()),
                         ],
                       );
               },
@@ -85,66 +163,38 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // 🔴 HERO
-  Widget _buildHero(bool isMobile) {
+  Widget _buildHero() {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
         color: const Color(0xFFA42525),
-        borderRadius: isMobile
-            ? const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              )
-            : const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                bottomLeft: Radius.circular(30),
-              ),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             "Junte-se a nós!",
-            style: TextStyle(
-              fontSize: 32,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 32, color: Colors.white),
           ),
           SizedBox(height: 20),
           Text(
-            "Faça o seu cadastro e ajude a contribuir para um futuro mais sustentável e solidário.",
-            style: TextStyle(fontSize: 20, color: Colors.white),
-            textAlign: TextAlign.center,
+            "Faça o seu cadastro e ajude a contribuir para um futuro mais sustentável.",
+            style: TextStyle(color: Colors.white),
           ),
         ],
       ),
     );
   }
 
-  // ⚪ FORM
-  Widget _buildForm(bool isMobile) {
+  Widget _buildForm() {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: isMobile
-            ? const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              )
-            : const BorderRadius.only(
-                topRight: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
         children: [
-          // 🔘 TABS
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -152,9 +202,7 @@ class _CadastroPageState extends State<CadastroPage> {
               _tabButton("Colaborador", "colaborador"),
             ],
           ),
-
           const SizedBox(height: 20),
-
           Form(
             key: _formKey,
             child: Column(
@@ -165,53 +213,47 @@ class _CadastroPageState extends State<CadastroPage> {
                       : "Cadastro Colaborador",
                   style: const TextStyle(fontSize: 20),
                 ),
-
                 const SizedBox(height: 20),
-
                 if (loading) const LoadingSpinner(),
-
                 _input(nome, "Nome completo"),
-
                 if (activeTab == "adm")
                   _input(cnpj, "CNPJ")
                 else
                   _input(cpf, "CPF"),
-
-                _input(dataNascimento, "Data de nascimento"),
+                GestureDetector(
+                  onTap: _selectDate,
+                  child: AbsorbPointer(
+                    child: _input(dataNascimento, "Data de nascimento"),
+                  ),
+                ),
                 _input(email, "Email"),
                 _input(telefone, "Telefone"),
                 _input(endereco, "Endereço"),
                 _input(senha, "Senha", obscure: true),
-                _input(confirmarSenha, "Confirmar senha", obscure: true),
-
+                _input(confirmarSenha, "Confirme sua senha", obscure: true),
                 const SizedBox(height: 10),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: loading ? null : handleSubmit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFA42525),
-                      minimumSize: const Size(double.infinity, 50),
                     ),
                     child: Text(
                       loading ? "Carregando..." : "Cadastrar",
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 15),
-
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/login');
+                    Navigator.pushNamed(context, "/login");
                   },
                   child: const Text("Já possui cadastro? Faça login"),
                 ),
-
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/home');
+                    Navigator.pushNamed(context, "/home");
                   },
                   child: const Text("Voltar para início"),
                 ),
@@ -223,7 +265,6 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // 🔘 TAB
   Widget _tabButton(String texto, String valor) {
     final isActive = activeTab == valor;
 
@@ -250,7 +291,6 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  // 🔤 INPUT
   Widget _input(TextEditingController controller, String label,
       {bool obscure = false}) {
     return Padding(
@@ -261,7 +301,7 @@ class _CadastroPageState extends State<CadastroPage> {
         validator: (value) =>
             value == null || value.isEmpty ? "Campo obrigatório" : null,
         decoration: InputDecoration(
-          labelText: label,
+          hintText: label,
           filled: true,
           fillColor: const Color(0xFFD3D2D2),
           border: OutlineInputBorder(

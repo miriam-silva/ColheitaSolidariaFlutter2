@@ -10,23 +10,36 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String activeTab = "colaborador"; 
+  String activeTab = "colaborador";
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+
+  // 🔥 NOVOS CAMPOS
+  final TextEditingController cnpjController = TextEditingController();
+  final TextEditingController chaveController = TextEditingController();
 
   bool loading = false;
   String error = "";
 
   final AuthService authService = AuthService();
 
-  // 🔐 LOGIN COM FIREBASE
+  // 🔐 LOGIN COMPLETO
   void handleLogin() async {
     if (emailController.text.isEmpty || senhaController.text.isEmpty) {
       setState(() {
         error = "Preencha todos os campos";
       });
       return;
+    }
+
+    if (activeTab == "admin") {
+      if (cnpjController.text.isEmpty || chaveController.text.isEmpty) {
+        setState(() {
+          error = "Preencha CNPJ e chave de acesso";
+        });
+        return;
+      }
     }
 
     setState(() {
@@ -37,6 +50,9 @@ class _LoginPageState extends State<LoginPage> {
     final result = await authService.loginUser(
       email: emailController.text,
       password: senhaController.text,
+      tipoUsuario: activeTab,
+      cnpj: activeTab == "admin" ? cnpjController.text : null,
+      chaveAcesso: activeTab == "admin" ? chaveController.text : null,
     );
 
     setState(() {
@@ -50,7 +66,6 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text("Login realizado com sucesso!")),
       );
 
-      // 🔀 REDIRECIONAMENTO PELO ROLE
       final role = userData["role"];
 
       if (role == "admin") {
@@ -167,7 +182,6 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           // 🔷 TABS
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -198,6 +212,14 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(vertical: 10),
               child: LoadingSpinner(size: 50),
             ),
+
+          // 🔥 CAMPOS DO ADMIN
+          if (activeTab == "admin") ...[
+            _input(cnpjController, "CNPJ"),
+            const SizedBox(height: 10),
+            _input(chaveController, "Chave de acesso"),
+            const SizedBox(height: 10),
+          ],
 
           _input(emailController, "E-mail"),
           const SizedBox(height: 10),

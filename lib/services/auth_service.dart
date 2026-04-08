@@ -3,78 +3,57 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // 🔐 REGISTRO
-  Future<Map<String, dynamic>> registerUser({
-    required String email,
-    required String password,
-    required String cpf,
-    required String role,
-  }) async {
-    try {
-      // 🔹 Cria usuário no Auth
-      UserCredential res = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      User? user = res.user;
-
-      if (user == null) {
-        throw Exception("Erro ao criar usuário");
-      }
-
-      // 🔹 Salva no Firestore
-      await _db.collection("users").doc(user.uid).set({
-        "email": email,
-        "cpf": cpf,
-        "role": role,
-      });
-
-      return {"success": true};
-    } catch (e) {
-      return {"success": false, "error": e.toString()};
-    }
-  }
-
-  // 🔐 LOGIN
   Future<Map<String, dynamic>> loginUser({
     required String email,
     required String password,
+    String? cnpj,
+    String? chaveAcesso,
+    required String tipoUsuario,
   }) async {
     try {
-      // 🔹 Login no Auth
-      UserCredential res = await _auth.signInWithEmailAndPassword(
+      // 🔐 Login com Firebase Auth
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      User? user = res.user;
+      final uid = userCredential.user!.uid;
 
-      if (user == null) {
-        throw Exception("Usuário não encontrado");
-      }
-
-      // 🔹 Busca dados no Firestore
-      DocumentSnapshot userDoc =
-          await _db.collection("users").doc(user.uid).get();
+      // 📄 Buscar dados do usuário no Firestore
+      final userDoc = await _firestore.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
-        throw Exception("Usuário não encontrado no Firestore");
+        return {"success": false, "error": "Usuário não encontrado"};
       }
 
-      return {
-        "success": true,
-        "data": userDoc.data(),
-      };
-    } catch (e) {
-      return {"success": false, "error": e.toString()};
-    }
-  }
+      final userData = userDoc.data()!;
 
-  // 🚪 LOGOUT
-  Future<void> logout() async {
-    await _auth.signOut();
+      // 🔐 Verifica tipo
+      if (userData['role'] != tipoUsuario) {
+        return {"success": false, "error": "Tipo de usuário incorreto"};
+      }
+
+      // 🔐 Se for admin → validar CNPJ + chave
+      if (tipoUsuario == "admin") {
+        if (userData['cnpj'] != cnpj) {
+          return {"success": false, "error": "CNPJ inválido"};
+        }
+
+        final configDoc =
+            await _firestore.collection('config').doc('chaves_de_acesso').get();
+
+        final chaves = List<String>.from(configDoc['chaves_de_acesso']);
+
+        if (!chaves.contains(chaveAcesso)) {
+          return {"success": false, "error": "Chave de acesso inválida"};
+        }
+      }
+
+      return {"success": true, "data": userData};
+    } catch (e) {
+      return {"success": false, "error": "Erro ao fazer login"};
+    }
   }
 }
