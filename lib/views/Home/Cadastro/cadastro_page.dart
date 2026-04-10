@@ -33,84 +33,75 @@ class _CadastroPageState extends State<CadastroPage> {
   bool validarCNPJ(String cnpj) => cnpj.length >= 14;
 
   void handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (senha.text != confirmarSenha.text) {
-      _showError("As senhas não coincidem!");
-      return;
-    }
-
-    final tipo = activeTab == "adm" ? "admin" : "colaborador";
-
-    if (tipo == "admin" && !validarCNPJ(cnpj.text)) {
-      _showError("CNPJ inválido!");
-      return;
-    }
-
-    if (tipo == "colaborador" && !validarCPF(cpf.text)) {
-      _showError("CPF inválido!");
-      return;
-    }
-
-    setState(() => loading = true);
-
-    try {
-      // 🔐 CRIA USUÁRIO NO AUTH
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email.text,
-        password: senha.text,
-      );
-
-      final user = userCredential.user;
-
-      if (user == null) {
-        throw Exception("Erro ao criar usuário");
-      }
-
-      // 🔥 FORÇA ATUALIZAÇÃO DO TOKEN
-      await user.getIdToken(true);
-
-      // 🔥 PEQUENO DELAY (EVITA ERRO DE PERMISSÃO)
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // 📦 SALVA NO FIRESTORE
-      await _firestore.collection("users").doc(user.uid).set({
-        "nome": nome.text,
-        "email": email.text,
-        "telefone": telefone.text,
-        "endereco": endereco.text,
-        "dataNascimento": dataNascimento.text,
-        "role": tipo,
-        "cnpj": tipo == "admin" ? cnpj.text : null,
-        "cpf": tipo == "colaborador" ? cpf.text : null,
-      });
-
-      setState(() => loading = false);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cadastro realizado com sucesso!")),
-      );
-
-      Navigator.pushNamed(context, "/login");
-    } on FirebaseAuthException catch (e) {
-      setState(() => loading = false);
-
-      if (e.code == 'email-already-in-use') {
-        _showError("Este email já está cadastrado");
-      } else if (e.code == 'weak-password') {
-        _showError("A senha deve ter pelo menos 6 caracteres");
-      } else if (e.code == 'invalid-email') {
-        _showError("Email inválido");
-      } else {
-        _showError("Erro no cadastro: ${e.message}");
-      }
-    } catch (e) {
-      setState(() => loading = false);
-      _showError("Erro ao salvar no banco de dados");
-    }
+  if (senha.text != confirmarSenha.text) {
+    _showError("As senhas não coincidem!");
+    return;
   }
 
+  final tipo = activeTab == "adm" ? "admin" : "colaborador";
+
+  if (tipo == "admin" && !validarCNPJ(cnpj.text)) {
+    _showError("CNPJ inválido!");
+    return;
+  }
+
+  if (tipo == "colaborador" && !validarCPF(cpf.text)) {
+    _showError("CPF inválido!");
+    return;
+  }
+
+  setState(() => loading = true);
+
+  try {
+    // 🔐 CRIA USUÁRIO
+    UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
+      email: email.text,
+      password: senha.text,
+    );
+
+    final user = userCredential.user;
+
+    if (user == null) throw Exception("Usuário não criado");
+
+    // 🔥 GARANTE QUE O FIRESTORE RECONHEÇA O AUTH
+   await user.getIdToken(true);
+    // 📦 SALVA NO FIRESTORE
+    await _firestore.collection("users").doc(userCredential.user!.uid).set({
+      "nome": nome.text,
+      "email": email.text,
+      "telefone": telefone.text,
+      "endereco": endereco.text,
+      "dataNascimento": dataNascimento.text,
+      "role": tipo,
+      "cnpj": tipo == "admin" ? cnpj.text : null,
+      "cpf": tipo == "colaborador" ? cpf.text : null,
+    }, SetOptions(merge: false));
+
+    setState(() => loading = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Cadastro realizado com sucesso!")),
+    );
+
+    Navigator.pushNamed(context, "/login");
+
+  } catch (e) {
+    setState(() => loading = false);
+
+  if (e is FirebaseAuthException) {
+    print("CÓDIGO: ${e.code}");
+    print("MENSAGEM: ${e.message}");
+
+    _showError(e.message ?? "Erro no cadastro");
+  } else {
+    print("ERRO COMPLETO: $e");
+    _showError("Erro inesperado");
+  }
+}
+}
   void _showError(String msg) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(msg)));

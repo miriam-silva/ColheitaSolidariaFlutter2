@@ -87,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
     measurementId: 'G-CKE90B0MT9',
   );
+
 }

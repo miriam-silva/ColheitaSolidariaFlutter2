@@ -29,6 +29,13 @@
             {
               "client_id": "138444161193-tdd9pqj06qnokql3862l4gp2i4732plh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "138444161193-v6cnksmprqeji5cb6ketmnusdvgqr02f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.colheitasolidariaFlutter"
+              }
             }
           ]
         }
