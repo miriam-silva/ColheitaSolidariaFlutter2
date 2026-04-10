@@ -1,1 +1,29 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"colheitasolidaria-teste2","appId":"1:138444161193:android:a066d09aef66cb32c269b8","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"colheitasolidaria-teste2","configurations":{"android":"1:138444161193:android:a066d09aef66cb32c269b8","ios":"1:138444161193:ios:a9109a54149879c7c269b8","macos":"1:138444161193:ios:a9109a54149879c7c269b8","web":"1:138444161193:web:94a9b4ba53111821c269b8","windows":"1:138444161193:web:e79a15cadf920646c269b8"}}}}}}
+{
+    "flutter": {
+      "platforms": {
+        "android": {
+          "default": {
+            "projectId": "colheitasolidaria-teste2",
+            "appId": "1:138444161193:android:a066d09aef66cb32c269b8",
+            "fileOutput": "android/app/google-services.json"
+          }
+        },
+        "dart": {
+          "lib/firebase_options.dart": {
+            "projectId": "colheitasolidaria-teste2",
+            "configurations": {
+              "android": "1:138444161193:android:a066d09aef66cb32c269b8",
+              "ios": "1:138444161193:ios:a9109a54149879c7c269b8",
+              "macos": "1:138444161193:ios:a9109a54149879c7c269b8",
+              "web": "1:138444161193:web:94a9b4ba53111821c269b8",
+              "windows": "1:138444161193:web:e79a15cadf920646c269b8"
+            }
+          }
+        }
+      }
+    },
+  
+    "firestore": {
+      "rules": "firestore.rules"
+    }
+  }

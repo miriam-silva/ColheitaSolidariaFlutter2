@@ -13,15 +13,25 @@ class AuthService {
     required String tipoUsuario,
   }) async {
     try {
-      // 🔐 Login com Firebase Auth
+      // 🔐 LOGIN
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      final uid = userCredential.user!.uid;
+      final user = userCredential.user;
 
-      // 📄 Buscar dados do usuário no Firestore
+      if (user == null) {
+        return {"success": false, "error": "Usuário não autenticado"};
+      }
+
+      // 🔥 GARANTE TOKEN ATUALIZADO
+      await user.reload();
+      await user.getIdToken(true);
+
+      final uid = user.uid;
+
+      // 📄 BUSCA USER
       final userDoc = await _firestore.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
@@ -30,21 +40,29 @@ class AuthService {
 
       final userData = userDoc.data()!;
 
-      // 🔐 Verifica tipo
+      // 🔐 VERIFICA ROLE
       if (userData['role'] != tipoUsuario) {
         return {"success": false, "error": "Tipo de usuário incorreto"};
       }
 
-      // 🔐 Se for admin → validar CNPJ + chave
+      // 🔐 ADMIN
       if (tipoUsuario == "admin") {
         if (userData['cnpj'] != cnpj) {
           return {"success": false, "error": "CNPJ inválido"};
         }
 
-        final configDoc =
-            await _firestore.collection('config').doc('chaves_de_acesso').get();
+        // 🔥 tenta pegar config
+        final configDoc = await _firestore
+            .collection('config')
+            .doc('chaves_de_acesso')
+            .get();
 
-        final chaves = List<String>.from(configDoc['chaves_de_acesso']);
+        if (!configDoc.exists) {
+          return {"success": false, "error": "Configuração não encontrada"};
+        }
+
+        final chaves =
+            List<String>.from(configDoc.data()!['chaves_de_acesso']);
 
         if (!chaves.contains(chaveAcesso)) {
           return {"success": false, "error": "Chave de acesso inválida"};
@@ -52,6 +70,11 @@ class AuthService {
       }
 
       return {"success": true, "data": userData};
+    } on FirebaseAuthException catch (e) {
+      return {
+        "success": false,
+        "error": e.message ?? "Erro de autenticação"
+      };
     } catch (e) {
       return {"success": false, "error": "Erro ao fazer login"};
     }

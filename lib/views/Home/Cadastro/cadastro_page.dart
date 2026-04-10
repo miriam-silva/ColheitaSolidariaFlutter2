@@ -31,7 +31,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
   bool validarCPF(String cpf) => cpf.length >= 11;
   bool validarCNPJ(String cnpj) => cnpj.length >= 14;
-
+  
   void handleSubmit() async {
   if (!_formKey.currentState!.validate()) return;
 
@@ -55,7 +55,7 @@ class _CadastroPageState extends State<CadastroPage> {
   setState(() => loading = true);
 
   try {
-    // 🔐 CRIA USUÁRIO
+    // 🔥 CRIA USUÁRIO
     UserCredential userCredential =
         await _auth.createUserWithEmailAndPassword(
       email: email.text,
@@ -66,19 +66,32 @@ class _CadastroPageState extends State<CadastroPage> {
 
     if (user == null) throw Exception("Usuário não criado");
 
-    // 🔥 GARANTE QUE O FIRESTORE RECONHEÇA O AUTH
-   await user.getIdToken(true);
-    // 📦 SALVA NO FIRESTORE
-    await _firestore.collection("users").doc(userCredential.user!.uid).set({
-      "nome": nome.text,
-      "email": email.text,
-      "telefone": telefone.text,
-      "endereco": endereco.text,
-      "dataNascimento": dataNascimento.text,
-      "role": tipo,
-      "cnpj": tipo == "admin" ? cnpj.text : null,
-      "cpf": tipo == "colaborador" ? cpf.text : null,
-    }, SetOptions(merge: false));
+    print("✅ Usuário criado: ${user.uid}");
+
+    // 🔥 FORÇA ATUALIZAÇÃO DO AUTH
+    await user.reload();
+    await user.getIdToken(true);
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final currentUser = _auth.currentUser;
+
+if (currentUser == null) {
+  throw Exception("Usuário não autenticado no Firestore ainda");
+}
+
+await _firestore.collection("users").doc(currentUser.uid).set({
+  "nome": nome.text,
+  "email": email.text,
+  "telefone": telefone.text,
+  "endereco": endereco.text,
+  "dataNascimento": dataNascimento.text,
+  "role": tipo,
+  "cnpj": tipo == "admin" ? cnpj.text : null,
+  "cpf": tipo == "colaborador" ? cpf.text : null,
+});
+
+    print("✅ Dados salvos no Firestore!");
 
     setState(() => loading = false);
 
@@ -91,16 +104,17 @@ class _CadastroPageState extends State<CadastroPage> {
   } catch (e) {
     setState(() => loading = false);
 
-  if (e is FirebaseAuthException) {
-    print("CÓDIGO: ${e.code}");
-    print("MENSAGEM: ${e.message}");
+    print("❌ ERRO COMPLETO: $e");
 
-    _showError(e.message ?? "Erro no cadastro");
-  } else {
-    print("ERRO COMPLETO: $e");
-    _showError("Erro inesperado");
+    if (e is FirebaseAuthException) {
+      print("CÓDIGO: ${e.code}");
+      print("MENSAGEM: ${e.message}");
+
+      _showError(e.message ?? "Erro no cadastro");
+    } else {
+      _showError("Erro inesperado");
+    }
   }
-}
 }
   void _showError(String msg) {
     ScaffoldMessenger.of(context)
