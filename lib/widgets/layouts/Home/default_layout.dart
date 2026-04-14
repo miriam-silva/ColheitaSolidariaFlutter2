@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../headerinicio_widget.dart';
-import '../navbarinicio_widget.dart';
-import '../footer_widget.dart';
+import '../../headerinicio_widget.dart';
+import '../../navbarinicio_widget.dart';
+import '../../footer_widget.dart';
 
 class DefaultLayout extends StatelessWidget {
   final Widget child;

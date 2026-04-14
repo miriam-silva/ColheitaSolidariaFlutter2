@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/layouts/default_layout.dart';
+import '../../widgets/layouts/Home/default_layout.dart';
 
 class ComoAjudarPage extends StatelessWidget {
   const ComoAjudarPage({super.key});
