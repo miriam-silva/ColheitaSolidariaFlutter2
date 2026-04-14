@@ -14,7 +14,7 @@ class _PedidosPageState extends State<PedidosPage> {
   bool loading = true;
   int? updatingId;
 
-  final String baseUrl = "SUA_API_URL"; // ⚠️ troca aqui
+  final String baseUrl = "SUA_API_URL"; 
 
   @override
   void initState() {
@@ -197,12 +197,10 @@ class _PedidosPageState extends State<PedidosPage> {
                   ),
                 ),
 
-                // BOTÃO EXPORTAR (placeholder)
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: ElevatedButton(
                     onPressed: () {
-                      // TODO: implementar PDF
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFA50000),
@@ -213,7 +211,6 @@ class _PedidosPageState extends State<PedidosPage> {
                   ),
                 ),
 
-                // BOTÃO VOLTAR
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: ElevatedButton(

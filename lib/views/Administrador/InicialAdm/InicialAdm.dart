@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../widgets/layouts/Adm/default_layout_admin.dart'; // seu layout que fizemos antes
+import '../../../widgets/layouts/Adm/DefaultLayoutAdm.dart'; 
 
 class InicialAdministrador extends StatelessWidget {
   const InicialAdministrador({super.key});
@@ -8,11 +8,11 @@ class InicialAdministrador extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultLayoutAdmin(
       child: Container(
-        color: const Color(0xFFE8CF9C), // background igual ao CSS
+        color: const Color(0xFFE8CF9C), 
         child: Center(
           child: GridView.count(
             shrinkWrap: true,
-            crossAxisCount: 2, // 2 por linha (igual mobile)
+            crossAxisCount: 2, 
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             padding: const EdgeInsets.all(16),

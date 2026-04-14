@@ -8,19 +8,15 @@ class HeaderWidget extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 2,
-      automaticallyImplyLeading: false, // remove botão de voltar automático
+      automaticallyImplyLeading: false, 
 
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
-          // 🔷 LOGO
           Image.asset(
             'assets/logotp.png',
             width: 140,
           ),
-
-          // 🔶 BOTÕES
           Row(
             children: [
               _buildButton(context, 'Entrar', '/login'),

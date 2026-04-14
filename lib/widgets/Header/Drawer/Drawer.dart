@@ -31,14 +31,12 @@ class _MeuDrawerState extends State<MeuDrawer> {
     });
   }
 
-  // 📸 Escolher imagem (IGUAL React - só seleciona)
   Future<void> escolherImagem() async {
     final XFile? imagem =
         await _picker.pickImage(source: ImageSource.gallery);
 
     if (imagem == null) return;
 
-    // 👉 aqui você chama seu "usePerfil"
     final resultado = await uploadFotoPerfil(File(imagem.path));
 
     if (resultado["sucesso"]) {
@@ -56,12 +54,10 @@ class _MeuDrawerState extends State<MeuDrawer> {
     }
   }
 
-  // 🚪 Logout
   void logout() {
     Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
   }
 
-  // 📌 Menus dinâmicos (igual React)
   List<Map<String, dynamic>> getMenus() {
     switch (widget.role) {
       case "admin":
@@ -94,15 +90,13 @@ class _MeuDrawerState extends State<MeuDrawer> {
     }
   }
 
-  // 🔥 SIMULA SEU usePerfil (depois você liga com Firebase/Supabase)
   Future<Map<String, dynamic>> uploadFotoPerfil(File imagem) async {
     try {
-      // aqui vai sua lógica real (Firebase ou Supabase)
       await Future.delayed(const Duration(seconds: 1));
 
       return {
         "sucesso": true,
-        "fotoUrl": imagem.path, // simulação
+        "fotoUrl": imagem.path, 
       };
     } catch (e) {
       return {
@@ -117,10 +111,9 @@ class _MeuDrawerState extends State<MeuDrawer> {
     final menus = getMenus();
 
     return Drawer(
-      width: 300, // igual seu CSS
+      width: 300, 
       child: Column(
         children: [
-          // 🔴 HEADER
           Container(
             width: double.infinity,
             color: const Color(0xFFA50000),
@@ -156,7 +149,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
 
           const SizedBox(height: 10),
 
-          // 📌 MENUS
           Expanded(
             child: ListView(
               children: menus.map((menu) {
@@ -180,7 +172,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
             ),
           ),
 
-          // 🚪 LOGOUT
           Padding(
             padding: const EdgeInsets.all(12),
             child: ElevatedButton(

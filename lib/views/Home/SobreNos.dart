@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/layouts/Home/default_layout.dart';
+import '../../widgets/layouts/Home/DefaultLayoutHome.dart';
 
 class SobrePage extends StatelessWidget {
   const SobrePage({super.key});
@@ -12,7 +12,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 🔶 INTRO
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -34,7 +33,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 🔴 TÍTULO
           const Text(
             'Nossa Missão',
             style: TextStyle(
@@ -46,7 +44,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 📦 MISSÕES
           _buildMissao(
             imagem: 'assets/tomatos.png',
             titulo: 'Reduzir o Desperdício',
@@ -73,7 +70,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 📖 SOBRE + OBJETIVOS
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -122,7 +118,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 👩‍💻 EQUIPE
           const Text(
             'Equipe',
             style: TextStyle(
@@ -146,7 +141,6 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // ⚙️ TECNOLOGIAS
           const Text(
             'Tecnologias',
             style: TextStyle(
@@ -228,7 +222,6 @@ class SobrePage extends StatelessWidget {
   }
 }
 
-// 👤 MEMBRO
 class _Membro extends StatelessWidget {
   final String nome;
   final String imagem;
@@ -250,7 +243,6 @@ class _Membro extends StatelessWidget {
   }
 }
 
-// ⚙️ TECNOLOGIA
 class _Tech extends StatelessWidget {
   final String nome;
   final String img;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../widgets/layouts/Adm/default_layout_admin.dart';
+import '../../../widgets/layouts/Adm/DefaultLayoutAdm.dart';
 
 class GerenciarUsuariosPage extends StatefulWidget {
   const GerenciarUsuariosPage({super.key});
@@ -195,7 +195,6 @@ class _GerenciarUsuariosPageState extends State<GerenciarUsuariosPage> {
 
             const SizedBox(height: 10),
 
-            // 📊 Tabela
             DataTable(
               columns: const [
                 DataColumn(label: Text("Email")),
@@ -211,7 +210,6 @@ class _GerenciarUsuariosPageState extends State<GerenciarUsuariosPage> {
                   DataCell(Text(usuario["email"])),
                   DataCell(Text(usuario["nomeCompleto"])),
 
-                  // 🔽 Cargo
                   DataCell(
                     isEditando
                         ? DropdownButton<String>(
@@ -233,7 +231,6 @@ class _GerenciarUsuariosPageState extends State<GerenciarUsuariosPage> {
                         : Text(usuario["role"]),
                   ),
 
-                  // 🔘 Ações
                   DataCell(
                     usuario["role"] == "Admin"
                         ? const Text("Sem ações")

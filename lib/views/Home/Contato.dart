@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/layouts/Home/default_layout.dart';
+import '../../widgets/layouts/Home/DefaultLayoutHome.dart';
 
 class ContatoPage extends StatelessWidget {
   const ContatoPage({super.key});
@@ -12,7 +12,6 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 🔶 TÍTULO
           const Text(
             'Entre em contato conosco!',
             textAlign: TextAlign.center,
@@ -33,7 +32,6 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 📝 FORMULÁRIO
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -67,7 +65,6 @@ class ContatoPage extends StatelessWidget {
 
                 const SizedBox(height: 15),
 
-                // 🔘 BOTÕES
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -97,7 +94,6 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 📞 FORMAS DE CONTATO
           const Text(
             'Veja nossas formas de contato:',
             textAlign: TextAlign.center,
@@ -110,7 +106,6 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 📦 CARDS
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 10,
@@ -158,7 +153,6 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 🙏 FINAL
           const Text(
             'A equipe da Colheita Solidária agradece o seu contato!!',
             textAlign: TextAlign.center,
@@ -182,7 +176,6 @@ class ContatoPage extends StatelessWidget {
     );
   }
 
-  // 🔧 CARD DE CONTATO
   static Widget _contatoCard({
     required String titulo,
     required String imagem,

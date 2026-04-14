@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../headerinicio_widget.dart';
-import '../../navbarinicio_widget.dart';
-import '../../footer_widget.dart';
+import '../../Header/HeaderHome.dart';
+import '../../Navbar/NavbarHome.dart';
+import '../../Footer.dart';
 
 class DefaultLayout extends StatelessWidget {
   final Widget child;
@@ -13,19 +13,13 @@ class DefaultLayout extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-
-          // 🔷 HEADER
           const HeaderWidget(),
-
-          // 🔴 NAVBAR
           const NavbarWidget(),
-
-          // 🔻 CONTEÚDO
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  child, // 👈 aqui entra o conteúdo da página
+                  child, 
                   const SizedBox(height: 30),
                   const FooterWidget(),
                 ],

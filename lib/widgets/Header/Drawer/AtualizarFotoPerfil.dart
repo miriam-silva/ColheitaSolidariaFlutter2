@@ -13,7 +13,6 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
   final ImagePicker _picker = ImagePicker();
   XFile? imagemSelecionada;
 
-  // 📸 selecionar imagem
   Future<void> selecionarImagem() async {
     final XFile? imagem =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -25,7 +24,6 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
     }
   }
 
-  // 🚀 upload (equivalente ao handleUpload)
   Future<void> handleUpload() async {
     if (imagemSelecionada == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,7 +37,7 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
       // exemplo:
       // final resultado = await uploadFotoPerfil(imagemSelecionada);
 
-      await Future.delayed(const Duration(seconds: 1)); // simulação
+      await Future.delayed(const Duration(seconds: 1)); 
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Foto atualizada com sucesso!")),
@@ -73,7 +71,6 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
 
             const SizedBox(height: 20),
 
-            // 🖼️ preview da imagem
             GestureDetector(
               onTap: selecionarImagem,
               child: CircleAvatar(
@@ -90,7 +87,6 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
 
             const SizedBox(height: 20),
 
-            // 📸 botão selecionar
             ElevatedButton(
               onPressed: selecionarImagem,
               style: ElevatedButton.styleFrom(
@@ -103,7 +99,6 @@ class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
 
             const SizedBox(height: 10),
 
-            // 🚀 botão enviar
             ElevatedButton(
               onPressed: handleUpload,
               style: ElevatedButton.styleFrom(

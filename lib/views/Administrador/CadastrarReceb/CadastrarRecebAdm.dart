@@ -41,7 +41,6 @@ class _CadastrarRecebedorAdmPageState
     });
 
     try {
-      // 🔥 Aqui você depois chama sua API
       await Future.delayed(const Duration(seconds: 2));
 
       setState(() {

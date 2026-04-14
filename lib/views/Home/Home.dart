@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/layouts/Home/default_layout.dart';
+import '../../widgets/layouts/Home/DefaultLayoutHome.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,7 +10,6 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
 
-          // 🔶 FAIXA BEM-VINDO
           Container(
             width: double.infinity,
             color: const Color(0xFFF5E2BF),
@@ -28,7 +27,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 🎠 CARROSSEL
           SizedBox(
             height: 200,
             child: PageView(
@@ -43,7 +41,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 🟡 SEÇÃO COM IMAGEM + TEXTO
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
@@ -70,7 +67,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // 🔴 TÍTULO
           const Text(
             'Como Funciona?',
             style: TextStyle(
@@ -82,7 +78,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 📦 CARDS
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -114,7 +109,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // 🔘 BOTÕES
           ElevatedButton(
             onPressed: () {
               Navigator.pushNamed(context, '/admin');
@@ -141,7 +135,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // 🔧 COMPONENTE REUTILIZÁVEL
   static Widget _buildCard({
     required String titulo,
     required String texto,

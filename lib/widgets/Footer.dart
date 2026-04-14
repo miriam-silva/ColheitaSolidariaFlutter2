@@ -11,8 +11,6 @@ class FooterWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: Column(
         children: [
-
-          // 🔶 LOGO
           GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, '/home');
@@ -24,8 +22,6 @@ class FooterWidget extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-
-          // 🔸 TEXTO
           const Text(
             'Colheita Solidária: Juntos plantamos esperança, cultivamos solidariedade e colhemos um futuro melhor para todos.',
             textAlign: TextAlign.center,

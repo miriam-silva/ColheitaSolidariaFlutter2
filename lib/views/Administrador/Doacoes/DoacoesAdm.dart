@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../widgets/layouts/Adm/default_layout_admin.dart';
-import '../../../widgets/Card/CardHistoricoDoacao/CardHistoricoDoacao.dart';
+import '../../../widgets/layouts/Adm/DefaultLayoutAdm.dart';
+import '../../../widgets/Card/CardHistoricoDoacao.dart';
 
 class DoacoesPage extends StatefulWidget {
   const DoacoesPage({super.key});
@@ -21,7 +21,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
 
   Future<void> buscarDoacoes() async {
     try {
-      // 🔹 Simulação da API (substituir depois pelo seu service)
       await Future.delayed(const Duration(seconds: 2));
 
       setState(() {
@@ -40,7 +39,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
   }
 
   void exportarPDF() {
-    // 🔥 depois a gente implementa com pacote pdf
     debugPrint("Exportando PDF...");
   }
 
@@ -49,7 +47,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
     return DefaultLayoutAdmin(
       child: Column(
         children: [
-          // 🔶 Barra estilo navbar
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -68,7 +65,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
 
           const SizedBox(height: 20),
 
-          // 🔹 Conteúdo
           Expanded(
   child: loading
       ? const Center(
@@ -93,7 +89,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
 
           const SizedBox(height: 20),
 
-          // 🔴 Botão exportar PDF
           ElevatedButton(
             onPressed: exportarPDF,
             style: ElevatedButton.styleFrom(
@@ -105,7 +100,6 @@ class _DoacoesPageState extends State<DoacoesPage> {
 
           const SizedBox(height: 20),
 
-          // 🔵 Botão voltar
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
