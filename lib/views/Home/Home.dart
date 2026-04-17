@@ -109,27 +109,6 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/admin');
-            },
-            child: const Text('Administrador'),
-          ),
-
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/recebedor');
-            },
-            child: const Text('Recebedor'),
-          ),
-
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/colaborador');
-            },
-            child: const Text('Colaborador'),
-          ),
-
         ],
       ),
     );

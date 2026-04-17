@@ -1,43 +1,26 @@
 {
   "project_info": {
-    "project_number": "138444161193",
-    "project_id": "colheitasolidaria-teste2",
-    "storage_bucket": "colheitasolidaria-teste2.firebasestorage.app"
+    "project_number": "781127490772",
+    "project_id": "teste-3f900",
+    "storage_bucket": "teste-3f900.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:138444161193:android:a066d09aef66cb32c269b8",
+        "mobilesdk_app_id": "1:781127490772:android:c3af7ec60dd9fa28f32f41",
         "android_client_info": {
           "package_name": "com.example.colheitasolidaria_flutter"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "138444161193-tdd9pqj06qnokql3862l4gp2i4732plh.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCzFwkuSRu5-dhvHWFkBGRVvXyRIdU9mrc"
+          "current_key": "AIzaSyCx1h_YczpRRSzckrEDespDnWfnRWMTe8o"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "138444161193-tdd9pqj06qnokql3862l4gp2i4732plh.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "138444161193-v6cnksmprqeji5cb6ketmnusdvgqr02f.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.colheitasolidariaFlutter"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastrarRecebedorAdmPage extends StatefulWidget {
   const CadastrarRecebedorAdmPage({super.key});
@@ -26,7 +28,12 @@ class _CadastrarRecebedorAdmPageState
   String mensagemErro = "";
   String mensagemSucesso = "";
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<void> handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
     if (senhaController.text != confirmarSenhaController.text) {
       setState(() {
         mensagemErro = "As senhas não coincidem.";
@@ -41,15 +48,55 @@ class _CadastrarRecebedorAdmPageState
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      // 🔐 1. CRIA USUÁRIO NO AUTH
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: senhaController.text.trim(),
+      );
+
+      final user = userCredential.user;
+
+      if (user == null) {
+        throw Exception("Erro ao criar usuário");
+      }
+
+      // 📄 2. SALVA NO FIRESTORE COM UID
+      await _firestore.collection("users").doc(user.uid).set({
+        "nome": nomeController.text,
+        "cpf": cpfController.text,
+        "dataNascimento": dataNascimentoController.text,
+        "numFamiliares":
+            int.tryParse(numFamiliaresController.text) ?? 0,
+        "email": emailController.text,
+        "telefone": telefoneController.text,
+        "role": "recebedor",
+        "createdAt": FieldValue.serverTimestamp(),
+      });
 
       setState(() {
         mensagemSucesso = "Recebedor cadastrado com sucesso!";
         loading = false;
       });
 
+      // 🔁 Redireciona depois de 2s
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushNamed(context, "/InicialAdministrador");
+      });
+
+    } on FirebaseAuthException catch (e) {
+      String erro = "Erro ao cadastrar";
+
+      if (e.code == 'email-already-in-use') {
+        erro = "Esse email já está em uso";
+      } else if (e.code == 'weak-password') {
+        erro = "A senha deve ter pelo menos 6 caracteres";
+      } else if (e.code == 'invalid-email') {
+        erro = "Email inválido";
+      }
+
+      setState(() {
+        mensagemErro = erro;
+        loading = false;
       });
 
     } catch (e) {
@@ -79,7 +126,7 @@ class _CadastrarRecebedorAdmPageState
             child: Column(
               children: [
 
-                // 🔴 Parte vermelha
+                // 🔴 HEADER
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(30),
@@ -102,7 +149,7 @@ class _CadastrarRecebedorAdmPageState
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "Amplie a rede de solidariedade e ajude a construir um futuro mais justo e sustentável.",
+                        "Amplie a rede de solidariedade e ajude a construir um futuro mais justo.",
                         style: TextStyle(color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
@@ -110,7 +157,7 @@ class _CadastrarRecebedorAdmPageState
                   ),
                 ),
 
-                // 📝 Formulário
+                // ⚪ FORM
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Form(
@@ -154,7 +201,7 @@ class _CadastrarRecebedorAdmPageState
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, "/InicialAdministrador");
+                              Navigator.pushNamed(context, "/admin");
                             },
                             style: TextButton.styleFrom(
                               backgroundColor: const Color(0xFF276772),
@@ -179,10 +226,12 @@ class _CadastrarRecebedorAdmPageState
       {bool isPassword = false, bool isNumber = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         obscureText: isPassword,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        validator: (value) =>
+            value == null || value.isEmpty ? "Campo obrigatório" : null,
         decoration: InputDecoration(
           hintText: label,
           filled: true,

@@ -12,32 +12,28 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String activeTab = "colaborador";
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController senhaController = TextEditingController();
-
-  // 🔥 NOVOS CAMPOS
-  final TextEditingController cnpjController = TextEditingController();
-  final TextEditingController chaveController = TextEditingController();
+  final emailController = TextEditingController();
+  final senhaController = TextEditingController();
+  final cnpjController = TextEditingController();
+  final chaveController = TextEditingController();
 
   bool loading = false;
   String error = "";
 
   final AuthService authService = AuthService();
 
-  // 🔐 LOGIN COMPLETO
-  void handleLogin() async {
+  // 🔐 LOGIN
+  Future<void> handleLogin() async {
+    if (loading) return; // evita clique duplo
+
     if (emailController.text.isEmpty || senhaController.text.isEmpty) {
-      setState(() {
-        error = "Preencha todos os campos";
-      });
+      setState(() => error = "Preencha email e senha");
       return;
     }
 
     if (activeTab == "admin") {
       if (cnpjController.text.isEmpty || chaveController.text.isEmpty) {
-        setState(() {
-          error = "Preencha CNPJ e chave de acesso";
-        });
+        setState(() => error = "Preencha CNPJ e chave de acesso");
         return;
       }
     }
@@ -47,45 +43,57 @@ class _LoginPageState extends State<LoginPage> {
       error = "";
     });
 
-    final result = await authService.loginUser(
-      email: emailController.text,
-      password: senhaController.text,
-      tipoUsuario: activeTab,
-      cnpj: activeTab == "admin" ? cnpjController.text : null,
-      chaveAcesso: activeTab == "admin" ? chaveController.text : null,
-    );
-
-    setState(() {
-      loading = false;
-    });
-
-    if (result["success"]) {
-      final userData = result["data"];
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login realizado com sucesso!")),
+    try {
+      final result = await authService.loginUser(
+        email: emailController.text.trim(),
+        password: senhaController.text.trim(),
+        tipoUsuario: activeTab,
+        cnpj: activeTab == "admin" ? cnpjController.text : null,
+        chaveAcesso: activeTab == "admin" ? chaveController.text : null,
       );
 
-      final role = userData["role"];
+      if (!mounted) return;
 
-      if (role == "admin") {
-        Navigator.pushReplacementNamed(context, "/admin");
-      } else if (role == "colaborador") {
-        Navigator.pushReplacementNamed(context, "/colaborador");
+      if (result["success"]) {
+        final userData = result["data"];
+        final role = userData["role"];
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login realizado com sucesso!")),
+        );
+
+        if (role == "admin") {
+          Navigator.pushReplacementNamed(context, "/admin");
+        } else if (role == "colaborador") {
+          Navigator.pushReplacementNamed(context, "/colaborador");
+        } else {
+          Navigator.pushReplacementNamed(context, "/recebedor");
+        }
       } else {
-        Navigator.pushReplacementNamed(context, "/recebedor");
+        setState(() {
+          error = result["error"] ?? "Erro ao fazer login";
+        });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        error = result["error"];
+        error = "Erro inesperado ao fazer login";
       });
     }
+
+    setState(() => loading = false);
   }
 
+  // 🔁 TROCAR ABA
   void changeTab(String tab) {
     setState(() {
-      activeTab = tab.toLowerCase();
+      activeTab = tab;
       error = "";
+
+      // limpa campos ao trocar tipo
+      emailController.clear();
+      senhaController.clear();
+      cnpjController.clear();
+      chaveController.clear();
     });
   }
 
@@ -140,7 +148,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
       ),
       child: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             "Bem-vindo de volta à Colheita Solidária!",
@@ -153,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           SizedBox(height: 20),
           Text(
-            "Faça o login e vamos juntos colher frutos de esperança e distribuir solidariedade.",
+            "Faça o login e vamos juntos colher frutos de esperança.",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white, fontSize: 18),
           ),
@@ -162,27 +169,16 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // ⚪ FORMULÁRIO
+  // ⚪ FORM
   Widget _buildForm(bool isMobile) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: isMobile
-            ? const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              )
-            : const BorderRadius.only(
-                topRight: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          // 🔷 TABS
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -196,10 +192,7 @@ class _LoginPageState extends State<LoginPage> {
 
           Text(
             "Login ${activeTab.toUpperCase()}",
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 20),
@@ -209,11 +202,10 @@ class _LoginPageState extends State<LoginPage> {
 
           if (loading)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.all(10),
               child: LoadingSpinner(size: 50),
             ),
 
-          // 🔥 CAMPOS DO ADMIN
           if (activeTab == "admin") ...[
             _input(cnpjController, "CNPJ"),
             const SizedBox(height: 10),
@@ -227,42 +219,31 @@ class _LoginPageState extends State<LoginPage> {
 
           const SizedBox(height: 20),
 
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: loading ? null : handleLogin,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFA42525),
-                padding: const EdgeInsets.all(15),
-              ),
-              child: Text(
-                loading ? "Carregando..." : "Acessar",
-                style: const TextStyle(color: Colors.white),
-              ),
+          ElevatedButton(
+            onPressed: loading ? null : handleLogin,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFA42525),
+              minimumSize: const Size(double.infinity, 45),
             ),
+            child: Text(loading ? "Carregando..." : "Acessar"),
           ),
 
           const SizedBox(height: 20),
 
           TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/cadastro");
-            },
-            child: const Text("Não possui cadastro? Clique aqui"),
+            onPressed: () => Navigator.pushNamed(context, "/cadastro"),
+            child: const Text("Não possui cadastro?"),
           ),
 
           TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/home");
-            },
-            child: const Text("Voltar para início"),
+            onPressed: () => Navigator.pushNamed(context, "/home"),
+            child: const Text("Voltar"),
           ),
         ],
       ),
     );
   }
 
-  // 🔷 TAB
   Widget _buildTab(String nome) {
     final isActive = activeTab == nome;
 
@@ -289,7 +270,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // 🔷 INPUT
   Widget _input(TextEditingController controller, String hint,
       {bool isPassword = false}) {
     return TextField(

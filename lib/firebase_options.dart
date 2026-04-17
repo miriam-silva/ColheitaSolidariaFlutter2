@@ -41,51 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCWlh0m_CxDx9sGoARkmM68EIdsrRC8Fog',
-    appId: '1:138444161193:web:94a9b4ba53111821c269b8',
-    messagingSenderId: '138444161193',
-    projectId: 'colheitasolidaria-teste2',
-    authDomain: 'colheitasolidaria-teste2.firebaseapp.com',
-    storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
-    measurementId: 'G-6PJZXMZMVS',
+    apiKey: 'AIzaSyAHdu0GNxHtP4HhEOTvWz9WG0x-_Us5w5E',
+    appId: '1:781127490772:web:33e456a873f06790f32f41',
+    messagingSenderId: '781127490772',
+    projectId: 'teste-3f900',
+    authDomain: 'teste-3f900.firebaseapp.com',
+    storageBucket: 'teste-3f900.firebasestorage.app',
+    measurementId: 'G-VFGHZHJX5C',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCzFwkuSRu5-dhvHWFkBGRVvXyRIdU9mrc',
-    appId: '1:138444161193:android:a066d09aef66cb32c269b8',
-    messagingSenderId: '138444161193',
-    projectId: 'colheitasolidaria-teste2',
-    storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
+    apiKey: 'AIzaSyCx1h_YczpRRSzckrEDespDnWfnRWMTe8o',
+    appId: '1:781127490772:android:c3af7ec60dd9fa28f32f41',
+    messagingSenderId: '781127490772',
+    projectId: 'teste-3f900',
+    storageBucket: 'teste-3f900.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC3511HFjvMGTNtugOfU68hYLZ-VDJS3Mc',
-    appId: '1:138444161193:ios:a9109a54149879c7c269b8',
-    messagingSenderId: '138444161193',
-    projectId: 'colheitasolidaria-teste2',
-    storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
-    iosClientId: '138444161193-v6cnksmprqeji5cb6ketmnusdvgqr02f.apps.googleusercontent.com',
+    apiKey: 'AIzaSyClk-OewajCzOC3B5icmbBtw7vCIjDQTRM',
+    appId: '1:781127490772:ios:69c53f191ef63baaf32f41',
+    messagingSenderId: '781127490772',
+    projectId: 'teste-3f900',
+    storageBucket: 'teste-3f900.firebasestorage.app',
     iosBundleId: 'com.example.colheitasolidariaFlutter',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC3511HFjvMGTNtugOfU68hYLZ-VDJS3Mc',
-    appId: '1:138444161193:ios:a9109a54149879c7c269b8',
-    messagingSenderId: '138444161193',
-    projectId: 'colheitasolidaria-teste2',
-    storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
-    iosClientId: '138444161193-v6cnksmprqeji5cb6ketmnusdvgqr02f.apps.googleusercontent.com',
+    apiKey: 'AIzaSyClk-OewajCzOC3B5icmbBtw7vCIjDQTRM',
+    appId: '1:781127490772:ios:69c53f191ef63baaf32f41',
+    messagingSenderId: '781127490772',
+    projectId: 'teste-3f900',
+    storageBucket: 'teste-3f900.firebasestorage.app',
     iosBundleId: 'com.example.colheitasolidariaFlutter',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCU9vSeWNs1M4qscKyWODFA4Wyy_5H5MIA',
-    appId: '1:138444161193:web:e79a15cadf920646c269b8',
-    messagingSenderId: '138444161193',
-    projectId: 'colheitasolidaria-teste2',
-    authDomain: 'colheitasolidaria-teste2.firebaseapp.com',
-    storageBucket: 'colheitasolidaria-teste2.firebasestorage.app',
-    measurementId: 'G-CKE90B0MT9',
+    apiKey: 'AIzaSyBQWgg9MCTeMmEFJYof3VQ2o9nvcrDgPBE',
+    appId: '1:781127490772:web:46da130b4dc49b2bf32f41',
+    messagingSenderId: '781127490772',
+    projectId: 'teste-3f900',
+    authDomain: 'teste-3f900.firebaseapp.com',
+    storageBucket: 'teste-3f900.firebasestorage.app',
+    measurementId: 'G-NKZF1STR08',
   );
 
 }

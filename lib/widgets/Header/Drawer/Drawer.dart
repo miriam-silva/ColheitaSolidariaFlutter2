@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MeuDrawer extends StatefulWidget {
   final String role;
@@ -12,8 +14,8 @@ class MeuDrawer extends StatefulWidget {
 }
 
 class _MeuDrawerState extends State<MeuDrawer> {
-  String nomeUsuario = "Usuário";
-  String emailUsuario = "email@email.com";
+  String nomeUsuario = "Carregando...";
+  String emailUsuario = "";
   String fotoPerfil = "assets/receptor.png";
 
   final ImagePicker _picker = ImagePicker();
@@ -24,11 +26,27 @@ class _MeuDrawerState extends State<MeuDrawer> {
     carregarUsuario();
   }
 
-  void carregarUsuario() {
-    setState(() {
-      nomeUsuario = "Miriam";
-      emailUsuario = "miriam@email.com";
-    });
+  // 🔥 BUSCAR DADOS DO FIREBASE
+  Future<void> carregarUsuario() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) return;
+
+      final doc = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+      if (doc.exists) {
+        setState(() {
+          nomeUsuario = doc["nome"] ?? "Usuário";
+          emailUsuario = doc["email"] ?? user.email ?? "";
+        });
+      }
+    } catch (e) {
+      print("Erro ao carregar usuário: $e");
+    }
   }
 
   Future<void> escolherImagem() async {
@@ -54,9 +72,21 @@ class _MeuDrawerState extends State<MeuDrawer> {
     }
   }
 
-  void logout() {
-    Navigator.pushNamedAndRemoveUntil(context, "/", (route) => false);
+  // 🔐 LOGOUT REAL
+  Future<void> logout() async {
+  try {
+    await FirebaseAuth.instance.signOut();
+
+    // Fecha o drawer primeiro
+    Navigator.pop(context);
+
+    // Navega para a home removendo tudo
+    Navigator.of(context, rootNavigator: true)
+        .pushNamedAndRemoveUntil("/home", (route) => false);
+  } catch (e) {
+    print("Erro ao deslogar: $e");
   }
+}
 
   List<Map<String, dynamic>> getMenus() {
     switch (widget.role) {
@@ -96,7 +126,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
 
       return {
         "sucesso": true,
-        "fotoUrl": imagem.path, 
+        "fotoUrl": imagem.path,
       };
     } catch (e) {
       return {
@@ -111,7 +141,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
     final menus = getMenus();
 
     return Drawer(
-      width: 300, 
+      width: 300,
       child: Column(
         children: [
           Container(
@@ -146,7 +176,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
             ),
           ),
 
-
           const SizedBox(height: 10),
 
           Expanded(
@@ -163,7 +192,12 @@ class _MeuDrawerState extends State<MeuDrawer> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, menu["route"]);
+
+                      if (menu.containsKey("route")) {
+                        Navigator.pushNamed(context, menu["route"]);
+                      } else if (menu.containsKey("action")) {
+                        menu["action"]();
+                      }
                     },
                     child: Text(menu["label"]),
                   ),
