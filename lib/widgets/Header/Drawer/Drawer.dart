@@ -26,7 +26,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
     carregarUsuario();
   }
 
-  // 🔥 BUSCAR DADOS DO FIREBASE
   Future<void> carregarUsuario() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -72,15 +71,12 @@ class _MeuDrawerState extends State<MeuDrawer> {
     }
   }
 
-  // 🔐 LOGOUT REAL
   Future<void> logout() async {
   try {
     await FirebaseAuth.instance.signOut();
 
-    // Fecha o drawer primeiro
     Navigator.pop(context);
 
-    // Navega para a home removendo tudo
     Navigator.of(context, rootNavigator: true)
         .pushNamedAndRemoveUntil("/home", (route) => false);
   } catch (e) {
@@ -102,8 +98,8 @@ class _MeuDrawerState extends State<MeuDrawer> {
 
       case "colaborador":
         return [
-          {"label": "Minhas doações", "route": "/InicialColaborador"},
-          {"label": "Registrar doações", "route": "/colaborador/registrar"},
+          {"label": "Minhas doações", "route": "/colaborador"},
+          {"label": "Registrar doações", "route": "/colaborador/Registrardoacao"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 
