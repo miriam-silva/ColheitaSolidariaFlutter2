@@ -24,6 +24,8 @@ dependencies:
   supabase_flutter: ^2.5.6
 
 dev_dependencies:
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
@@ -32,3 +34,15 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/loguinho.png"
+
+flutter_native_splash:
+  color: "#F9E1B2"
+
+  android_12:
+    color: "#F9E1B2"

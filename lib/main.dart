@@ -68,8 +68,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
       theme: ThemeData(
-        primarySwatch: Colors.green,
+       scaffoldBackgroundColor: Color(0xFFF9E1B2),
       ),
+      
 
       initialRoute: '/home',
 

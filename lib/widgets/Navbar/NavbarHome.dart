@@ -30,7 +30,7 @@ class NavbarWidget extends StatelessWidget {
       child: Text(
         texto,
         style: const TextStyle(
-          color: Color(0xFFF5E2BF),
+          color: Color(0xFFF9E1B2),
           fontSize: 16,
         ),
       ),

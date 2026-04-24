@@ -6,7 +6,7 @@ class HeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor:  Color(0xFFF9E1B2),
       elevation: 2,
       automaticallyImplyLeading: false, 
 
@@ -35,7 +35,7 @@ class HeaderWidget extends StatelessWidget {
         Navigator.of(context).pushNamed(rota);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFE3DAA7),
+        backgroundColor: const Color(0xFFF9E1B2),
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
 
           Container(
             width: double.infinity,
-            color: const Color(0xFFF5E2BF),
+            color: const Color(0xFFFFFCE0),
             padding: const EdgeInsets.all(16),
             child: const Text(
               'Bem-Vindo a Colheita Solidária!',
