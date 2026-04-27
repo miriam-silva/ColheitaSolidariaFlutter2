@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'firebase_options.dart';
 
@@ -34,7 +35,7 @@ import 'views/Colaborador/DoacaoRegistrada/DoacaoRegistrada.dart';
 import 'views/Administrador/InicialAdm/InicialAdm.dart';
 import 'views/Administrador/Doacoes/DoacoesAdm.dart';
 import 'views/Administrador/CadastrarReceb/CadastrarRecebAdm.dart';
-import 'views/Administrador/GerenciarUsuarios/GerenciarusuariosAdm.dart';
+import 'views/Administrador/GerenciarUsuarios/GerenciarUsuariosAdm.dart';
 import 'views/Administrador/Painel/PainelMetricoAdm.dart';
 import 'views/Administrador/Pedidos/PedidosAdm.dart';
 
@@ -44,9 +45,7 @@ import 'widgets/Header/Drawer/AtualizarFotoPerfil.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: 'https://jdeivuuyeclualawjudt.supabase.co',
@@ -69,16 +68,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Colheita Solidária',
       debugShowCheckedModeBanner: false,
+
       home: SplashScreen(),
-      theme: ThemeData(
-       scaffoldBackgroundColor: Color(0xFFF9E1B2),
-      ),
-      
+
+      theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFF9E1B2)),
+
+      // 🔥 ISSO AQUI RESOLVE O ERRO DO CALENDÁRIO
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('pt', 'BR')],
 
       initialRoute: '/home',
 
       routes: {
-
         /// HOME
         '/home': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
@@ -87,18 +92,14 @@ class MyApp extends StatelessWidget {
         '/colaboradores': (context) => const ColaboradoresPage(),
         '/comoajudar': (context) => const ComoAjudarPage(),
         '/contato': (context) => const ContatoPage(),
-        '/atualizar-foto': (context) =>
-            const AtualizarFotoPerfil(),
+        '/atualizar-foto': (context) => const AtualizarFotoPerfil(),
 
         /// ADMIN
         '/admin': (context) => const InicialAdministrador(),
         '/adm/pedidos': (context) => PedidosPage(),
         '/adm/doacoes': (context) => DoacoesPage(),
-        '/adm/cadastrar': (context) =>
-            CadastrarRecebedorAdmPage(),
-        '/adm/usuarios': (context) =>
-            GerenciarUsuariosPage(),
-        '/adm/painel': (context) => PainelMetrico(),
+        '/adm/cadastrar': (context) => CadastrarRecebedorAdmPage(),
+        '/adm/usuarios': (context) => GerenciarUsuariosPage(),
 
         /// COLABORADOR
         '/colaborador': (context) => const InicialColaborador(),

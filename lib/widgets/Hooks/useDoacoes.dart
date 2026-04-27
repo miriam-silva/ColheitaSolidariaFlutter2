@@ -14,6 +14,8 @@ Future<Map<String, dynamic>?> registrarDoacao(
       "imagemUrl": dados["imagemUrl"],
 
       "usuarioId": dados["usuarioId"],
+      "nomeDoador": dados["nomeDoador"],
+      "emailDoador": dados["emailDoador"],
 
       "status": "Disponível",
 
@@ -22,10 +24,7 @@ Future<Map<String, dynamic>?> registrarDoacao(
 
     final novoDoc = await docRef.get();
 
-    return {
-      "id": docRef.id,
-      ...?novoDoc.data(),
-    };
+    return {"id": docRef.id, ...?novoDoc.data()};
   } catch (e) {
     print("Erro ao registrar doação: $e");
     return null;
@@ -38,21 +37,12 @@ Future<List<Map<String, dynamic>>> buscarDoacoesPorColaborador(
   try {
     final snapshot = await firestore
         .collection("doacoes")
-        .where(
-          "usuarioId",
-          isEqualTo: usuarioId,
-        )
-        .orderBy(
-          "createdAt",
-          descending: true,
-        )
+        .where("usuarioId", isEqualTo: usuarioId)
+        .orderBy("createdAt", descending: true)
         .get();
 
     return snapshot.docs.map((doc) {
-      return {
-        "id": doc.id,
-        ...doc.data(),
-      };
+      return {"id": doc.id, ...doc.data()};
     }).toList();
   } catch (e) {
     print("Erro ao buscar doações: $e");
@@ -64,17 +54,11 @@ Future<List<Map<String, dynamic>>> buscarTodasDoacoes() async {
   try {
     final snapshot = await firestore
         .collection("doacoes")
-        .orderBy(
-          "createdAt",
-          descending: true,
-        )
+        .orderBy("createdAt", descending: true)
         .get();
 
     return snapshot.docs.map((doc) {
-      return {
-        "id": doc.id,
-        ...doc.data(),
-      };
+      return {"id": doc.id, ...doc.data()};
     }).toList();
   } catch (e) {
     print("Erro ao buscar todas as doações: $e");
@@ -82,15 +66,9 @@ Future<List<Map<String, dynamic>>> buscarTodasDoacoes() async {
   }
 }
 
-Future<bool> atualizarDoacao(
-  String id,
-  Map<String, dynamic> dados,
-) async {
+Future<bool> atualizarDoacao(String id, Map<String, dynamic> dados) async {
   try {
-    await firestore
-        .collection("doacoes")
-        .doc(id)
-        .update(dados);
+    await firestore.collection("doacoes").doc(id).update(dados);
 
     return true;
   } catch (e) {
@@ -99,14 +77,9 @@ Future<bool> atualizarDoacao(
   }
 }
 
-Future<bool> deletarDoacao(
-  String id,
-) async {
+Future<bool> deletarDoacao(String id) async {
   try {
-    await firestore
-        .collection("doacoes")
-        .doc(id)
-        .delete();
+    await firestore.collection("doacoes").doc(id).delete();
 
     return true;
   } catch (e) {

@@ -93,7 +93,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
           {"label": "Doações", "route": "/adm/doacoes"},
           {"label": "Cadastrar recebedor", "route": "/adm/cadastrar"},
           {"label": "Gerenciar usuários", "route": "/adm/usuarios"},
-          {"label": "Painel Métrico", "route": "/adm/painel"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 

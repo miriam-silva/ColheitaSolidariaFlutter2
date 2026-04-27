@@ -1,25 +1,20 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:http/http.dart' as http;
 
 class PainelMetrico extends StatefulWidget {
-  final List<dynamic>? usuarios;
+  final List<Map<String, dynamic>> usuarios;
 
-  const PainelMetrico({super.key, this.usuarios});
+  const PainelMetrico({super.key, required this.usuarios});
 
   @override
   State<PainelMetrico> createState() => _PainelMetricoState();
 }
 
 class _PainelMetricoState extends State<PainelMetrico> {
-  List<Map<String, dynamic>> dados = [];
+  Map<String, int> contagem = {"Admin": 0, "Colaborador": 0, "Recebedor": 0};
 
-  final List<Color> cores = [
-    Color(0xFFA50000),
-    Color(0xFFF5A623),
-    Color(0xFF4CAF50),
-  ];
+  bool loading = true;
 
   @override
   void initState() {
@@ -29,94 +24,98 @@ class _PainelMetricoState extends State<PainelMetrico> {
 
   Future<void> carregarDados() async {
     try {
-      List usuarios = widget.usuarios ?? [];
+      final snapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .get();
 
-      if (usuarios.isEmpty) {
-        final response = await http.get(
-          Uri.parse("SUA_API_URL/Admin/usuarios-gerais"),
-        );
+      Map<String, int> temp = {"Admin": 0, "Colaborador": 0, "Recebedor": 0};
 
-        if (response.statusCode == 200) {
-          usuarios = jsonDecode(response.body);
-        }
+      for (var doc in snapshot.docs) {
+        final role = (doc.data()["role"] ?? "").toString().toLowerCase();
+
+        if (role == "admin")
+          temp["Admin"] = temp["Admin"]! + 1;
+        else if (role == "colaborador")
+          temp["Colaborador"] = temp["Colaborador"]! + 1;
+        else if (role == "recebedor")
+          temp["Recebedor"] = temp["Recebedor"]! + 1;
       }
-
-      Map<String, int> contagem = {
-        "Admin": 0,
-        "Colaborador": 0,
-        "Recebedor": 0,
-      };
-
-      for (var u in usuarios) {
-        contagem[u['role']] = (contagem[u['role']] ?? 0) + 1;
-      }
-
-      List<Map<String, dynamic>> grafico = contagem.entries.map((entry) {
-        return {
-          "name": entry.key,
-          "value": entry.value,
-        };
-      }).toList();
 
       setState(() {
-        dados = grafico;
+        contagem = temp;
+        loading = false;
       });
     } catch (e) {
-      print("Erro ao carregar métricas: $e");
+      debugPrint("Erro ao carregar métricas: $e");
+      setState(() => loading = false);
     }
+  }
+
+  List<PieChartSectionData> getSections() {
+    final colors = [
+      const Color(0xFFA50000),
+      const Color(0xFFF5A623),
+      const Color(0xFF4CAF50),
+    ];
+
+    final labels = contagem.keys.toList();
+    final values = contagem.values.toList();
+    final total = values.fold(0, (a, b) => a + b);
+
+    return List.generate(labels.length, (i) {
+      final value = values[i];
+      final percent = total == 0 ? 0 : (value / total) * 100;
+
+      return PieChartSectionData(
+        value: value.toDouble(),
+        title: "${labels[i]}\n${percent.toStringAsFixed(1)}%",
+        radius: 90,
+        color: colors[i],
+        titleStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(24),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 8,
-            color: Colors.black12,
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Usuários separados por tipo",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFA50000),
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // 🔥 ISSO AQUI RESOLVE O OVERFLOW
+          children: [
+            const Text(
+              "Usuários por tipo",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-          SizedBox(height: 20),
 
-          SizedBox(
-            height: 300,
-            child: PieChart(
-              PieChartData(
-                sections: dados.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  var data = entry.value;
+            const SizedBox(height: 20),
 
-                  return PieChartSectionData(
-                    value: data["value"].toDouble(),
-                    title: "${data["name"]}: ${data["value"]}",
-                    color: cores[index % cores.length],
-                    radius: 100,
-                    titleStyle: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
-                }).toList(),
+            if (loading)
+              const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              SizedBox(
+                height: 220, // 🔥 menor = não quebra layout
+                child: PieChart(
+                  PieChartData(
+                    sections: getSections(),
+                    centerSpaceRadius: 35,
+                    sectionsSpace: 2,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
