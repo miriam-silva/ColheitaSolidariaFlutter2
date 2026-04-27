@@ -88,11 +88,12 @@ class _MeuDrawerState extends State<MeuDrawer> {
     switch (widget.role) {
       case "admin":
         return [
-          {"label": "Início", "route": "/InicialAdministrador"},
+          {"label": "Início", "route": "/admin"},
           {"label": "Pedidos", "route": "/adm/pedidos"},
           {"label": "Doações", "route": "/adm/doacoes"},
           {"label": "Cadastrar recebedor", "route": "/adm/cadastrar"},
           {"label": "Gerenciar usuários", "route": "/adm/usuarios"},
+          {"label": "Painel Métrico", "route": "/adm/painel"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 
@@ -100,14 +101,15 @@ class _MeuDrawerState extends State<MeuDrawer> {
         return [
           {"label": "Minhas doações", "route": "/colaborador"},
           {"label": "Registrar doações", "route": "/colaborador/Registrardoacao"},
+          {"label": "Minhas doações", "route": "/colaborador/MinhasDoacoes"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 
       case "recebedor":
         return [
-          {"label": "Doações", "route": "/InicialRecebedor"},
-          {"label": "Minhas solicitações", "route": "/recebedor/solicitacoes"},
-          {"label": "Favoritos", "route": "/recebedor/favoritos"},
+          {"label": "Doações", "route": "/recebedor"},
+          {"label": "Minhas solicitações", "route": "/recebedor/MinhasSolicitacoes"},
+          {"label": "Favoritos", "route": "/recebedor/Favoritos"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 

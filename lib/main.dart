@@ -19,7 +19,10 @@ import 'views/Home/ComoAjudar.dart';
 import 'views/Home/Contato.dart';
 
 /// RECEBEDOR
-import 'views/Recebedor/Recebedor.dart';
+import 'views/Recebedor/InicialReceb/InicialRecebedor.dart';
+import 'views/Recebedor/Favoritos/Favoritos.dart';
+import 'views/Recebedor/MinhasSolicitacoes/MinhasSolicitacoes.dart';
+import 'views/Recebedor/PedidoEnviado/PedidoEnviado.dart';
 
 /// COLABORADOR
 import 'views/Colaborador/InicialColab/InicialColab.dart';
@@ -104,8 +107,10 @@ class MyApp extends StatelessWidget {
         '/colaborador/DoacaoRegistrada': (context) => const DoacaoRegistrada(),
 
         /// RECEBEDOR
-        '/recebedor': (context) =>
-            const RecebedorPage(),
+        '/recebedor': (context) => const InicialRecebedor(),
+        '/recebedor/PedidoEnviado': (context) => const PedidoEnviado(),
+        '/recebedor/MinhasSolicitacoes': (context) => MinhasSolicitacoes(),
+        '/recebedor/Favoritos': (context) => const Favoritos(),
       },
     );
   }

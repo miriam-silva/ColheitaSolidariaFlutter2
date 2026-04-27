@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../widgets/layouts/Adm/DefaultLayoutAdm.dart';
 
 class CadastrarRecebedorAdmPage extends StatefulWidget {
   const CadastrarRecebedorAdmPage({super.key});
@@ -10,9 +11,7 @@ class CadastrarRecebedorAdmPage extends StatefulWidget {
       _CadastrarRecebedorAdmPageState();
 }
 
-class _CadastrarRecebedorAdmPageState
-    extends State<CadastrarRecebedorAdmPage> {
-
+class _CadastrarRecebedorAdmPageState extends State<CadastrarRecebedorAdmPage> {
   final _formKey = GlobalKey<FormState>();
 
   final nomeController = TextEditingController();
@@ -65,8 +64,7 @@ class _CadastrarRecebedorAdmPageState
         "nome": nomeController.text,
         "cpf": cpfController.text,
         "dataNascimento": dataNascimentoController.text,
-        "numFamiliares":
-            int.tryParse(numFamiliaresController.text) ?? 0,
+        "numFamiliares": int.tryParse(numFamiliaresController.text) ?? 0,
         "email": emailController.text,
         "telefone": telefoneController.text,
         "role": "recebedor",
@@ -82,7 +80,6 @@ class _CadastrarRecebedorAdmPageState
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushNamed(context, "/InicialAdministrador");
       });
-
     } on FirebaseAuthException catch (e) {
       String erro = "Erro ao cadastrar";
 
@@ -98,7 +95,6 @@ class _CadastrarRecebedorAdmPageState
         mensagemErro = erro;
         loading = false;
       });
-
     } catch (e) {
       setState(() {
         mensagemErro = "Erro ao cadastrar o recebedor.";
@@ -107,12 +103,24 @@ class _CadastrarRecebedorAdmPageState
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
 
-      body: Center(
+    if (picked != null) {
+      dataNascimentoController.text =
+          "${picked.year}-${picked.month}-${picked.day}";
+    }
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return DefaultLayoutAdmin(
+    child: Center(
         child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.all(16),
@@ -120,12 +128,11 @@ class _CadastrarRecebedorAdmPageState
               color: Colors.white,
               borderRadius: BorderRadius.circular(25),
               boxShadow: const [
-                BoxShadow(color: Colors.black12, blurRadius: 10)
+                BoxShadow(color: Colors.black12, blurRadius: 10),
               ],
             ),
             child: Column(
               children: [
-
                 // 🔴 HEADER
                 Container(
                   width: double.infinity,
@@ -164,21 +171,42 @@ class _CadastrarRecebedorAdmPageState
                     key: _formKey,
                     child: Column(
                       children: [
-
                         _buildInput("Nome completo", nomeController),
                         _buildInput("CPF", cpfController),
-                        _buildInput("Data de nascimento", dataNascimentoController),
-                        _buildInput("Número de familiares", numFamiliaresController, isNumber: true),
+                        GestureDetector(
+                          onTap: _selectDate,
+                          child: AbsorbPointer(
+                            child: _buildInput(
+                              "Data de nascimento",
+                              dataNascimentoController,
+                            ),
+                          ),
+                        ),
+                        _buildInput(
+                          "Número de familiares",
+                          numFamiliaresController,
+                          isNumber: true,
+                        ),
                         _buildInput("Email", emailController),
                         _buildInput("Telefone", telefoneController),
                         _buildInput("Senha", senhaController, isPassword: true),
-                        _buildInput("Confirmar senha", confirmarSenhaController, isPassword: true),
+                        _buildInput(
+                          "Confirmar senha",
+                          confirmarSenhaController,
+                          isPassword: true,
+                        ),
 
                         if (mensagemErro.isNotEmpty)
-                          Text(mensagemErro, style: const TextStyle(color: Colors.red)),
+                          Text(
+                            mensagemErro,
+                            style: const TextStyle(color: Colors.red),
+                          ),
 
                         if (mensagemSucesso.isNotEmpty)
-                          Text(mensagemSucesso, style: const TextStyle(color: Colors.green)),
+                          Text(
+                            mensagemSucesso,
+                            style: const TextStyle(color: Colors.green),
+                          ),
 
                         const SizedBox(height: 15),
 
@@ -222,8 +250,12 @@ class _CadastrarRecebedorAdmPageState
     );
   }
 
-  Widget _buildInput(String label, TextEditingController controller,
-      {bool isPassword = false, bool isNumber = false}) {
+  Widget _buildInput(
+    String label,
+    TextEditingController controller, {
+    bool isPassword = false,
+    bool isNumber = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
