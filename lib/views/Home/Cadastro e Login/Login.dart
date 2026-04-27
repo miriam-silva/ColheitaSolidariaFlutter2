@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/LoadingSpinner.dart';
-import '../../../services/auth_service.dart';
+import '../../../services/AuthService.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

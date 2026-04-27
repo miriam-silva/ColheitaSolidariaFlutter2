@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../services/PerfilService.dart';
 
 class AtualizarFotoPerfil extends StatefulWidget {
   const AtualizarFotoPerfil({super.key});
@@ -10,107 +12,87 @@ class AtualizarFotoPerfil extends StatefulWidget {
 }
 
 class _AtualizarFotoPerfilState extends State<AtualizarFotoPerfil> {
-  final ImagePicker _picker = ImagePicker();
-  XFile? imagemSelecionada;
+  File? imagem;
+  bool loading = false;
+
+  final picker = ImagePicker();
+  final PerfilService perfilService = PerfilService();
 
   Future<void> selecionarImagem() async {
-    final XFile? imagem =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? file =
+        await picker.pickImage(source: ImageSource.gallery);
 
-    if (imagem != null) {
-      setState(() {
-        imagemSelecionada = imagem;
-      });
-    }
+    if (file == null) return;
+
+    setState(() {
+      imagem = File(file.path);
+    });
   }
 
-  Future<void> handleUpload() async {
-    if (imagemSelecionada == null) {
+  Future<void> salvarFoto() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || imagem == null) return;
+
+    setState(() => loading = true);
+
+    final url = await perfilService.uploadFotoPerfil(
+      imagem!,
+      user.uid,
+    );
+
+    if (!mounted) return;
+
+    if (url == null) {
+      setState(() => loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Selecione uma imagem primeiro!")),
+        const SnackBar(content: Text("Erro ao atualizar foto")),
       );
       return;
     }
 
-    try {
-      // 🔥 AQUI você conecta com seu hook / API
-      // exemplo:
-      // final resultado = await uploadFotoPerfil(imagemSelecionada);
+    setState(() {
+      imagem = null;
+      loading = false;
+    });
 
-      await Future.delayed(const Duration(seconds: 1)); 
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Foto atualizada com sucesso!")),
-      );
-
-      setState(() {
-        imagemSelecionada = null;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro: $e")),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Foto atualizada com sucesso!")),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Atualizar Foto de Perfil"),
-        backgroundColor: const Color(0xFFA50000),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Text(
-              "Atualizar Foto de Perfil",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 20),
-
-            GestureDetector(
-              onTap: selecionarImagem,
-              child: CircleAvatar(
-                radius: 80,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: imagemSelecionada != null
-                    ? FileImage(File(imagemSelecionada!.path))
-                    : null,
-                child: imagemSelecionada == null
-                    ? const Icon(Icons.camera_alt, size: 40)
-                    : null,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: selecionarImagem,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF276772),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text("Selecionar imagem"),
-            ),
-
-            const SizedBox(height: 10),
-
-            ElevatedButton(
-              onPressed: handleUpload,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFA50000),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text("Enviar foto"),
-            ),
-          ],
+    return Column(
+      children: [
+        const Text(
+          "Atualizar Foto de Perfil",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-      ),
+
+        const SizedBox(height: 20),
+
+        GestureDetector(
+          onTap: selecionarImagem,
+          child: CircleAvatar(
+            radius: 60,
+            backgroundImage:
+                imagem != null ? FileImage(imagem!) : null,
+            child: imagem == null
+                ? const Icon(Icons.camera_alt, size: 40)
+                : null,
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        ElevatedButton(
+          onPressed: loading ? null : salvarFoto,
+          child: loading
+              ? const CircularProgressIndicator()
+              : const Text("Salvar Foto"),
+        ),
+      ],
     );
   }
 }

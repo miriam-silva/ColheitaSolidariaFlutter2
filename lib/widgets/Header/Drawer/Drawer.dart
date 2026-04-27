@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../services/PerfilService.dart';
 
 class MeuDrawer extends StatefulWidget {
   final String role;
@@ -19,6 +20,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
   String fotoPerfil = "assets/receptor.png";
 
   final ImagePicker _picker = ImagePicker();
+  final PerfilService perfilService = PerfilService();
 
   @override
   void initState() {
@@ -29,7 +31,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
   Future<void> carregarUsuario() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-
       if (user == null) return;
 
       final doc = await FirebaseFirestore.instance
@@ -37,52 +38,64 @@ class _MeuDrawerState extends State<MeuDrawer> {
           .doc(user.uid)
           .get();
 
-      if (doc.exists) {
-        setState(() {
-          nomeUsuario = doc["nome"] ?? "Usuário";
-          emailUsuario = doc["email"] ?? user.email ?? "";
-        });
-      }
+      final data = doc.data() as Map<String, dynamic>?;
+
+      if (!mounted) return;
+
+      setState(() {
+        nomeUsuario = data?["nome"] ?? "Usuário";
+        emailUsuario = data?["email"] ?? user.email ?? "";
+
+        fotoPerfil = data != null && data.containsKey("fotoPerfil")
+            ? data["fotoPerfil"]
+            : fotoPerfil;
+      });
     } catch (e) {
       print("Erro ao carregar usuário: $e");
     }
   }
 
   Future<void> escolherImagem() async {
-    final XFile? imagem =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? imagem = await _picker.pickImage(source: ImageSource.gallery);
 
     if (imagem == null) return;
 
-    final resultado = await uploadFotoPerfil(File(imagem.path));
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-    if (resultado["sucesso"]) {
+    final url = await perfilService.uploadFotoPerfil(
+      File(imagem.path),
+      user.uid,
+    );
+
+    if (!mounted) return;
+
+    if (url != null) {
       setState(() {
-        fotoPerfil = resultado["fotoUrl"];
+        fotoPerfil = url;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Foto atualizada com sucesso!")),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro: ${resultado["mensagem"]}")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Erro ao atualizar foto")));
     }
   }
 
   Future<void> logout() async {
-  try {
     await FirebaseAuth.instance.signOut();
 
-    Navigator.pop(context);
+    if (!mounted) return;
 
-    Navigator.of(context, rootNavigator: true)
-        .pushNamedAndRemoveUntil("/home", (route) => false);
-  } catch (e) {
-    print("Erro ao deslogar: $e");
+    Navigator.pop(context);
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pushNamedAndRemoveUntil("/home", (route) => false);
   }
-}
 
   List<Map<String, dynamic>> getMenus() {
     switch (widget.role) {
@@ -99,7 +112,10 @@ class _MeuDrawerState extends State<MeuDrawer> {
       case "colaborador":
         return [
           {"label": "Minhas doações", "route": "/colaborador"},
-          {"label": "Registrar doações", "route": "/colaborador/Registrardoacao"},
+          {
+            "label": "Registrar doações",
+            "route": "/colaborador/Registrardoacao",
+          },
           {"label": "Minhas doações", "route": "/colaborador/MinhasDoacoes"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
@@ -107,29 +123,16 @@ class _MeuDrawerState extends State<MeuDrawer> {
       case "recebedor":
         return [
           {"label": "Doações", "route": "/recebedor"},
-          {"label": "Minhas solicitações", "route": "/recebedor/MinhasSolicitacoes"},
+          {
+            "label": "Minhas solicitações",
+            "route": "/recebedor/MinhasSolicitacoes",
+          },
           {"label": "Favoritos", "route": "/recebedor/Favoritos"},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];
 
       default:
         return [];
-    }
-  }
-
-  Future<Map<String, dynamic>> uploadFotoPerfil(File imagem) async {
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      return {
-        "sucesso": true,
-        "fotoUrl": imagem.path,
-      };
-    } catch (e) {
-      return {
-        "sucesso": false,
-        "mensagem": e.toString(),
-      };
     }
   }
 
@@ -151,9 +154,9 @@ class _MeuDrawerState extends State<MeuDrawer> {
                   onTap: escolherImagem,
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: fotoPerfil.startsWith("assets")
-                        ? AssetImage(fotoPerfil) as ImageProvider
-                        : FileImage(File(fotoPerfil)),
+                    backgroundImage: fotoPerfil.startsWith("http")
+                        ? NetworkImage(fotoPerfil)
+                        : AssetImage(fotoPerfil) as ImageProvider,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -179,8 +182,10 @@ class _MeuDrawerState extends State<MeuDrawer> {
             child: ListView(
               children: menus.map((menu) {
                 return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF276772),
@@ -190,10 +195,10 @@ class _MeuDrawerState extends State<MeuDrawer> {
                     onPressed: () {
                       Navigator.pop(context);
 
-                      if (menu.containsKey("route")) {
+                      if (menu["route"] != null) {
                         Navigator.pushNamed(context, menu["route"]);
-                      } else if (menu.containsKey("action")) {
-                        menu["action"]();
+                      } else {
+                        (menu["action"] as Function)();
                       }
                     },
                     child: Text(menu["label"]),
