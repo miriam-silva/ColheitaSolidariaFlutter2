@@ -147,7 +147,7 @@ class _MinhasSolicitacoesState extends State<MinhasSolicitacoes> {
                           width: 180,
                           height: 180,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) {
+                          errorBuilder: (_, _, _) {
                             return Container(
                               width: 180,
                               height: 180,

@@ -38,7 +38,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
           .doc(user.uid)
           .get();
 
-      final data = doc.data() as Map<String, dynamic>?;
+      final data = doc.data();
 
       if (!mounted) return;
 

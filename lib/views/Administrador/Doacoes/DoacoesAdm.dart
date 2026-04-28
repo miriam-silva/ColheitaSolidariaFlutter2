@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../widgets/layouts/Adm/DefaultLayoutAdm.dart';
-import '../../../widgets/LoadingSpinner.dart';
 import '../InicialAdm/InicialAdm.dart';
 import '../../../widgets/Utils/GerarPDFdoacoes.dart';
 

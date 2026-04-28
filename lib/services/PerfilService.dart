@@ -10,7 +10,7 @@ class PerfilService {
   Future<String?> uploadFotoPerfil(File arquivo, String uid) async {
     try {
       final fileName =
-          "perfil/${uid}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+          "perfil/$uid/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
       // upload
       await supabase.storage

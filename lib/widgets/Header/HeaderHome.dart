@@ -6,7 +6,7 @@ class HeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor:  Color(0xFFF9E1B2),
+      backgroundColor:  Color.fromRGBO(249, 225, 178, 100),
       elevation: 2,
       automaticallyImplyLeading: false, 
 

@@ -33,9 +33,9 @@ class _PainelMetricoState extends State<PainelMetrico> {
       for (var doc in snapshot.docs) {
         final role = (doc.data()["role"] ?? "").toString().toLowerCase();
 
-        if (role == "admin")
+        if (role == "admin") {
           temp["Admin"] = temp["Admin"]! + 1;
-        else if (role == "colaborador")
+        } else if (role == "colaborador")
           temp["Colaborador"] = temp["Colaborador"]! + 1;
         else if (role == "recebedor")
           temp["Recebedor"] = temp["Recebedor"]! + 1;

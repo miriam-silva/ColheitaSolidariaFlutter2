@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/layouts/Receb/DefaultLayoutReceb.dart';
-import '../../../widgets/Card/CardDoacao.dart';
 import '../../../widgets/LoadingSpinner.dart';
 import '../../../widgets/ListaDoacoesFiltraValidade.dart';
 import '../../../widgets/Hooks/useDoacoes.dart';

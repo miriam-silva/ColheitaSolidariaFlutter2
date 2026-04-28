@@ -36,7 +36,6 @@ import 'views/Administrador/InicialAdm/InicialAdm.dart';
 import 'views/Administrador/Doacoes/DoacoesAdm.dart';
 import 'views/Administrador/CadastrarReceb/CadastrarRecebAdm.dart';
 import 'views/Administrador/GerenciarUsuarios/GerenciarUsuariosAdm.dart';
-import 'views/Administrador/Painel/PainelMetricoAdm.dart';
 import 'views/Administrador/Pedidos/PedidosAdm.dart';
 
 /// DRAWER
