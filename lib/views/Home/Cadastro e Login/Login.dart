@@ -10,7 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String activeTab = "colaborador";
+  String activeTab = "admin";
 
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
@@ -22,9 +22,35 @@ class _LoginPageState extends State<LoginPage> {
 
   final AuthService authService = AuthService();
 
-  // 🔐 LOGIN
+  String getTituloLogin() {
+    switch (activeTab) {
+      case "admin":
+        return "Administrador";
+      case "colaborador":
+        return "Colaborador";
+      case "recebedor":
+        return "Recebedor";
+      default:
+        return "";
+    }
+  }
+
+  /// 🔥 NOVO: label das abas
+  String getLabelTab(String tab) {
+    switch (tab) {
+      case "admin":
+        return "ADMIN";
+      case "colaborador":
+        return "COLABORADOR";
+      case "recebedor":
+        return "RECEBEDOR";
+      default:
+        return "";
+    }
+  }
+
   Future<void> handleLogin() async {
-    if (loading) return; // evita clique duplo
+    if (loading) return;
 
     if (emailController.text.isEmpty || senhaController.text.isEmpty) {
       setState(() => error = "Preencha email e senha");
@@ -55,8 +81,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       if (result["success"]) {
-        final userData = result["data"];
-        final role = userData["role"];
+        final role = result["data"]["role"];
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login realizado com sucesso!")),
@@ -83,13 +108,11 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => loading = false);
   }
 
-  // 🔁 TROCAR ABA
   void changeTab(String tab) {
     setState(() {
       activeTab = tab;
       error = "";
 
-      // limpa campos ao trocar tipo
       emailController.clear();
       senhaController.clear();
       cnpjController.clear();
@@ -111,10 +134,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 return isMobile
                     ? Column(
-                        children: [
-                          _buildHero(isMobile),
-                          _buildForm(isMobile),
-                        ],
+                        children: [_buildHero(isMobile), _buildForm(isMobile)],
                       )
                     : Row(
                         children: [
@@ -130,11 +150,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // 🔴 HERO
   Widget _buildHero(bool isMobile) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
         color: const Color(0xFFA42525),
         borderRadius: isMobile
@@ -159,23 +178,28 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           SizedBox(height: 20),
-          Text(
-            "Faça o login e vamos juntos colher frutos de esperança.",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 18),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              "Faça o login e vamos juntos colher frutos de esperança e distribuir solidariedade para quem mais precisa.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // ⚪ FORM
   Widget _buildForm(bool isMobile) {
     return Container(
       padding: const EdgeInsets.all(30),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
       ),
       child: Column(
         children: [
@@ -191,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 20),
 
           Text(
-            "Login ${activeTab.toUpperCase()}",
+            "Login ${getTituloLogin()}",
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
 
@@ -223,6 +247,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: loading ? null : handleLogin,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFA42525),
+              foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 45),
             ),
             child: Text(loading ? "Carregando..." : "Acessar"),
@@ -232,11 +257,13 @@ class _LoginPageState extends State<LoginPage> {
 
           TextButton(
             onPressed: () => Navigator.pushNamed(context, "/cadastro"),
+            style: TextButton.styleFrom(foregroundColor: Colors.black),
             child: const Text("Não possui cadastro?"),
           ),
 
           TextButton(
             onPressed: () => Navigator.pushNamed(context, "/home"),
+            style: TextButton.styleFrom(foregroundColor: Colors.black),
             child: const Text("Voltar"),
           ),
         ],
@@ -244,15 +271,17 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildTab(String nome) {
-    final isActive = activeTab == nome;
+  Widget _buildTab(String tab) {
+    final isActive = activeTab == tab;
+    final label = getLabelTab(tab);
 
     return GestureDetector(
-      onTap: () => changeTab(nome),
+      onTap: () => changeTab(tab),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            nome.toUpperCase(),
+            label,
             style: TextStyle(
               color: isActive ? const Color(0xFFA42525) : Colors.grey,
               fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
@@ -262,16 +291,19 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               margin: const EdgeInsets.only(top: 5),
               height: 3,
-              width: 40,
+              width: label.length * 8.0, // 🔥 igual cadastro
               color: const Color(0xFFA42525),
-            )
+            ),
         ],
       ),
     );
   }
 
-  Widget _input(TextEditingController controller, String hint,
-      {bool isPassword = false}) {
+  Widget _input(
+    TextEditingController controller,
+    String hint, {
+    bool isPassword = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: isPassword,

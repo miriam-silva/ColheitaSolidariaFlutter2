@@ -232,23 +232,46 @@ class _GerenciarUsuariosPageState extends State<GerenciarUsuariosPage> {
                                 const Text("Bloqueado")
                               else if (isEditando) ...[
                                 ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(
+                                      0xFF276772,
+                                    ), // verde salvar
+                                    foregroundColor:
+                                        Colors.white, // texto branco
+                                  ),
                                   onPressed: () => handleSalvar(usuario["id"]),
                                   child: const Text("Salvar"),
                                 ),
+
                                 const SizedBox(width: 10),
+
                                 ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 99, 96, 96), // cinza editar/cancelar
+                                    foregroundColor:
+                                        Colors.white, // texto branco
+                                  ),
                                   onPressed: handleCancelar,
                                   child: const Text("Cancelar"),
                                 ),
                               ] else ...[
                                 ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 99, 96, 96), // cinza editar
+                                    foregroundColor:
+                                        Colors.white, // texto branco
+                                  ),
                                   onPressed: () => handleEditar(usuario),
                                   child: const Text("Editar"),
                                 ),
+
                                 const SizedBox(width: 10),
+
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
+                                    foregroundColor:
+                                        Colors.white, // texto branco
                                   ),
                                   onPressed: () => handleExcluir(usuario["id"]),
                                   child: const Text("Excluir"),

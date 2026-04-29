@@ -215,6 +215,7 @@ class _DoacoesPageState extends State<DoacoesPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF276772),
+                      foregroundColor: Colors.white,
                     ),
                     child: const Text("Voltar"),
                   ),

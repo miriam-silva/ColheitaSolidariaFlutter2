@@ -47,7 +47,6 @@ class _CadastrarRecebedorAdmPageState extends State<CadastrarRecebedorAdmPage> {
     });
 
     try {
-      // 🔐 1. CRIA USUÁRIO NO AUTH
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: senhaController.text.trim(),
@@ -59,7 +58,6 @@ class _CadastrarRecebedorAdmPageState extends State<CadastrarRecebedorAdmPage> {
         throw Exception("Erro ao criar usuário");
       }
 
-      // 📄 2. SALVA NO FIRESTORE COM UID
       await _firestore.collection("users").doc(user.uid).set({
         "nome": nomeController.text,
         "cpf": cpfController.text,
@@ -76,7 +74,6 @@ class _CadastrarRecebedorAdmPageState extends State<CadastrarRecebedorAdmPage> {
         loading = false;
       });
 
-      // 🔁 Redireciona depois de 2s
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushNamed(context, "/InicialAdministrador");
       });
@@ -118,132 +115,149 @@ class _CadastrarRecebedorAdmPageState extends State<CadastrarRecebedorAdmPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return DefaultLayoutAdmin(
-    child: Center(
+  Widget build(BuildContext context) {
+    return DefaultLayoutAdmin(
+      child: Center(
         child: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: const [
-                BoxShadow(color: Colors.black12, blurRadius: 10),
-              ],
-            ),
-            child: Column(
-              children: [
-                // 🔴 HEADER
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(30),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFA42525),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(25),
-                    ),
-                  ),
-                  child: const Column(
-                    children: [
-                      Text(
-                        "Cadastre um novo membro!",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Amplie a rede de solidariedade e ajude a construir um futuro mais justo.",
-                        style: TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+          child: Column(
+            children: [
+              Container(
+                width: 700,
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 10),
+                  ],
                 ),
-
-                // ⚪ FORM
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildInput("Nome completo", nomeController),
-                        _buildInput("CPF", cpfController),
-                        GestureDetector(
-                          onTap: _selectDate,
-                          child: AbsorbPointer(
-                            child: _buildInput(
-                              "Data de nascimento",
-                              dataNascimentoController,
+                child: Column(
+                  children: [
+                    // HEADER
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(30),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFA42525),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(25),
+                        ),
+                      ),
+                      child: const Column(
+                        children: [
+                          Text(
+                            "Cadastre um novo membro!",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        _buildInput(
-                          "Número de familiares",
-                          numFamiliaresController,
-                          isNumber: true,
-                        ),
-                        _buildInput("Email", emailController),
-                        _buildInput("Telefone", telefoneController),
-                        _buildInput("Senha", senhaController, isPassword: true),
-                        _buildInput(
-                          "Confirmar senha",
-                          confirmarSenhaController,
-                          isPassword: true,
-                        ),
-
-                        if (mensagemErro.isNotEmpty)
+                          SizedBox(height: 10),
                           Text(
-                            mensagemErro,
-                            style: const TextStyle(color: Colors.red),
+                            "Amplie a rede de solidariedade e ajude a construir um futuro mais justo e sustentável.",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
+                        ],
+                      ),
+                    ),
 
-                        if (mensagemSucesso.isNotEmpty)
-                          Text(
-                            mensagemSucesso,
-                            style: const TextStyle(color: Colors.green),
-                          ),
+                    // FORM
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildInput("Nome completo", nomeController),
+                            _buildInput("CPF", cpfController),
 
-                        const SizedBox(height: 15),
-
-                        loading
-                            ? const CircularProgressIndicator()
-                            : SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: handleSubmit,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFA50000),
-                                  ),
-                                  child: const Text("Criar cadastro"),
+                            GestureDetector(
+                              onTap: _selectDate,
+                              child: AbsorbPointer(
+                                child: _buildInput(
+                                  "Data de nascimento",
+                                  dataNascimentoController,
                                 ),
                               ),
-
-                        const SizedBox(height: 15),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, "/admin");
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF276772),
-                              foregroundColor: Colors.white,
                             ),
-                            child: const Text("Voltar"),
-                          ),
+
+                            _buildInput(
+                              "Número de familiares",
+                              numFamiliaresController,
+                              isNumber: true,
+                            ),
+
+                            _buildInput("Email", emailController),
+                            _buildInput("Telefone", telefoneController),
+                            _buildInput(
+                              "Senha",
+                              senhaController,
+                              isPassword: true,
+                            ),
+                            _buildInput(
+                              "Confirmar senha",
+                              confirmarSenhaController,
+                              isPassword: true,
+                            ),
+
+                            if (mensagemErro.isNotEmpty)
+                              Text(
+                                mensagemErro,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+
+                            if (mensagemSucesso.isNotEmpty)
+                              Text(
+                                mensagemSucesso,
+                                style: const TextStyle(color: Colors.green),
+                              ),
+
+                            const SizedBox(height: 15),
+
+                            loading
+                                ? const CircularProgressIndicator()
+                                : SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: handleSubmit,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFFA50000,
+                                        ),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text("Criar cadastro"),
+                                    ),
+                                  ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/admin");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF276772),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text("Voltar"),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ),

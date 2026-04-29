@@ -146,7 +146,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
         children: [
           Container(
             width: double.infinity,
-            color: const Color(0xFFA50000),
+            color:  const Color(0xFFA50000), //Color.fromRGBO(249, 225, 178, 100),
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
@@ -163,14 +163,14 @@ class _MeuDrawerState extends State<MeuDrawer> {
                 Text(
                   nomeUsuario,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   emailUsuario,
-                  style: const TextStyle(color: Colors.white70),
+                  style: const TextStyle(color: Color.fromARGB(179, 255, 255, 255)),
                 ),
               ],
             ),

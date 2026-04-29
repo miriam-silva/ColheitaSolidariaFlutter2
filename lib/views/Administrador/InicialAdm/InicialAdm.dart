@@ -7,8 +7,7 @@ class InicialAdministrador extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultLayoutAdmin(
-      child: Container(
-        color: const Color(0xFFE8CF9C), 
+      child: Container( 
         child: Center(
           child: GridView.count(
             shrinkWrap: true,
@@ -34,7 +33,7 @@ class InicialAdministrador extends StatelessWidget {
         Navigator.pushNamed(context, route);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.brown,
+        backgroundColor: const Color.fromRGBO(164, 37, 37, 1),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.all(20),
         shape: RoundedRectangleBorder(

@@ -40,10 +40,8 @@ class _PedidosPageState extends State<PedidosPage> {
 
         String recebedorNome = "Usuário desconhecido";
 
-        /// pega o uid salvo na solicitação
         final recebedorId = data["recebedorId"];
 
-        /// busca o nome do usuário na coleção users
         if (recebedorId != null) {
           final userDoc = await _firestore
               .collection("users")
@@ -51,7 +49,8 @@ class _PedidosPageState extends State<PedidosPage> {
               .get();
 
           if (userDoc.exists) {
-            recebedorNome = userDoc.data()?["nome"] ?? "Usuário desconhecido";
+            recebedorNome =
+                userDoc.data()?["nome"] ?? "Usuário desconhecido";
           }
         }
 
@@ -99,7 +98,9 @@ class _PedidosPageState extends State<PedidosPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Status alterado para $novoStatus")),
+        SnackBar(
+          content: Text("Status alterado para $novoStatus"),
+        ),
       );
     } catch (e) {
       debugPrint("Erro ao atualizar status: $e");
@@ -173,7 +174,10 @@ class _PedidosPageState extends State<PedidosPage> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(color: Colors.black, width: 3),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 3,
+                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -210,11 +214,14 @@ class _PedidosPageState extends State<PedidosPage> {
                         children: [
                           ElevatedButton(
                             onPressed: podeAlterar
-                                ? () =>
-                                      atualizarStatus(pedido["id"], "Aprovado")
+                                ? () => atualizarStatus(
+                                      pedido["id"],
+                                      "Aprovado",
+                                    )
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF276772),
+                              backgroundColor:
+                                  const Color(0xFF276772),
                             ),
                             child: updatingId == pedido["id"]
                                 ? const SizedBox(
@@ -232,11 +239,14 @@ class _PedidosPageState extends State<PedidosPage> {
 
                           ElevatedButton(
                             onPressed: podeAlterar
-                                ? () =>
-                                      atualizarStatus(pedido["id"], "Protelado")
+                                ? () => atualizarStatus(
+                                      pedido["id"],
+                                      "Protelado",
+                                    )
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFA50000),
+                              backgroundColor:
+                                  const Color(0xFFA50000),
                             ),
                             child: updatingId == pedido["id"]
                                 ? const SizedBox(
@@ -271,21 +281,25 @@ class _PedidosPageState extends State<PedidosPage> {
           const SizedBox(height: 30),
 
           Center(
-              child: ElevatedButton(
-                onPressed: () => gerarPDFPedidos(pedidos),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFA50000),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
+            child: ElevatedButton(
+              onPressed: () => gerarPDFPedidos(pedidos),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA50000),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
                 ),
-                child: const Text(
-                  "Exportar PDF Pedidos",
-                  style: TextStyle(color: Colors.white),
+              ),
+              child: const Text(
+                "Exportar PDF Pedidos",
+                style: TextStyle(
+                  color: Colors.white,
                 ),
               ),
             ),
+          ),
+
+          const SizedBox(height: 20),
 
           Align(
             alignment: Alignment.centerRight,
@@ -294,7 +308,8 @@ class _PedidosPageState extends State<PedidosPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const InicialAdministrador(),
+                    builder: (_) =>
+                        const InicialAdministrador(),
                   ),
                 );
               },
@@ -304,16 +319,17 @@ class _PedidosPageState extends State<PedidosPage> {
                   horizontal: 20,
                   vertical: 14,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
               child: const Text(
                 "Voltar",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
+
+          const SizedBox(height: 30),
         ],
       ),
     );

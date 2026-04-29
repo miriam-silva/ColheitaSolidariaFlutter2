@@ -43,7 +43,7 @@ class _DefaultLayoutAdminState extends State<DefaultLayoutAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFA50000),
+        backgroundColor:  Color(0xFFF5C25C), //  const Color(0xFFA50000)  Color.fromRGBO(249, 225, 178, 100)
         title: const Text("Colheita Solidária"),
         centerTitle: true,
 
