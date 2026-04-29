@@ -35,7 +35,7 @@ class HeaderWidget extends StatelessWidget {
         Navigator.of(context).pushNamed(rota);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFF9E1B2),
+        backgroundColor: const Color.fromARGB(255, 241, 236, 204),
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

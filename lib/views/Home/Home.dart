@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../../widgets/layouts/Home/DefaultLayoutHome.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,43 +28,121 @@ class HomePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          SizedBox(
-            height: 200,
-            child: PageView(
-              children: const [
-                Image(image: AssetImage('assets/img2.jpg'), fit: BoxFit.cover),
-                Image(image: AssetImage('assets/img3.jpg'), fit: BoxFit.cover),
-                Image(image: AssetImage('assets/img4.jpg'), fit: BoxFit.cover),
-                Image(image: AssetImage('assets/img5.jpg'), fit: BoxFit.cover),
-              ],
+          // CARROSSEL DE IMAGENS
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              viewportFraction: 0.9,
+              autoPlayInterval: const Duration(seconds: 3),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
             ),
+            items: [
+              'assets/img2.jpg',
+              'assets/img3.jpg',
+              'assets/img4.jpg',
+              'assets/img5.jpg',
+            ].map((imagePath) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              );
+            }).toList(),
           ),
 
           const SizedBox(height: 30),
 
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.transparent, Color(0xFFF5C25C)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
+  padding: const EdgeInsets.all(16),
+  decoration: const BoxDecoration(
+    gradient: const LinearGradient(
+  colors: [
+    Color.fromARGB(14, 245, 194, 92),
+    Color(0xFFF5C25C),
+  ],
+  stops: [0.05, 0.95],
+  begin: Alignment.centerLeft,
+  end: Alignment.centerRight,
+),
+  ),
+  child: Row(
+    children: [
+      Image.asset(
+        'assets/agricultoraicon.png',
+        width: 120,
+      ),
+
+      const SizedBox(width: 10),
+
+      Expanded(
+        child: RichText(
+          textAlign: TextAlign.right,
+          text: const TextSpan(
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              height: 1.5,
+            ),
+            children: [
+              TextSpan(
+                text: 'No Colheita Solidária, acreditamos que ',
               ),
-            ),
-            child: Row(
-              children: [
-                Image.asset('assets/agricultoraicon.png', width: 120),
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text(
-                    'No Colheita Solidária, acreditamos que todos merecem acesso a alimentos frescos e nutritivos...',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 16),
-                  ),
+              TextSpan(
+                text: 'todos merecem',
+                style: TextStyle(
+                  color: Color(0xFFB22222),
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
+              ),
+              TextSpan(
+                text:
+                    ' acesso a alimentos frescos e nutritivos.\n\nNossa missão é ',
+              ),
+              TextSpan(
+                text: 'conectar agricultores',
+                style: TextStyle(
+                  color: Color(0xFFB22222),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text:
+                    ' com excedentes de produção a pessoas e ',
+              ),
+              TextSpan(
+                text: 'famílias que necessitam',
+                style: TextStyle(
+                  color: Color(0xFFB22222),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text:
+                    ', reduzindo o desperdício de alimentos e ajudando a combater a fome.\n\n',
+              ),
+              TextSpan(
+                text: 'Junte-se a nós nesta causa',
+                style: TextStyle(
+                  color: Color(0xFFB22222),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text:
+                    ' e faça a diferença na vida de alguém hoje mesmo.',
+              ),
+            ],
           ),
+        ),
+      ),
+    ],
+  ),
+),
 
           const SizedBox(height: 30),
 
@@ -79,27 +158,27 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 20),
 
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
 
                 _buildCard(
                   titulo: 'Doe alimentos',
-                  texto: 'Agricultores cadastrados podem listar alimentos.',
+                  texto: 'Agricultores cadastrados podem listar os alimentos disponíveis para doação.',
                   imagem: 'assets/alimentos2.png',
                   cor: const Color(0xFF66A276),
                 ),
 
                 _buildCard(
                   titulo: 'Receba alimentos',
-                  texto: 'Pessoas podem se cadastrar para receber.',
+                  texto: 'Pessoas carentes se cadastram para receber alimentos doados.',
                   imagem: 'assets/receba.png',
                   cor: const Color(0xFF6CA899),
                 ),
 
                 _buildCard(
                   titulo: 'Conecte-se',
-                  texto: 'Conectamos doadores e recebedores.',
+                  texto: 'Nossa plataforma facilita a conexão entre doadores e recebedores, garantindo que os alimentos cheguem a quem mais precisa.',
                   imagem: 'assets/coracao_plantinha.png',
                   cor: const Color(0xFF276772),
                 ),
@@ -108,7 +187,6 @@ class HomePage extends StatelessWidget {
           ),
 
           const SizedBox(height: 20),
-
         ],
       ),
     );

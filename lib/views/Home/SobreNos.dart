@@ -9,7 +9,6 @@ class SobrePage extends StatelessWidget {
     return DefaultLayout(
       child: Column(
         children: [
-
           const SizedBox(height: 20),
 
           Padding(
@@ -48,7 +47,7 @@ class SobrePage extends StatelessWidget {
             imagem: 'assets/tomatos.png',
             titulo: 'Reduzir o Desperdício',
             texto: 'Minimizar a perda de alimentos por meio de doações.',
-            cor: const Color(0xFFBC2A25),
+            cor: const Color.fromARGB(255, 188, 42, 37),
             direita: true,
           ),
 
@@ -56,7 +55,7 @@ class SobrePage extends StatelessWidget {
             imagem: 'assets/maos.png',
             titulo: 'Combater a Fome',
             texto: 'Fornecer alimentos frescos e nutritivos para quem mais precisa.',
-            cor: const Color(0xFF539749),
+            cor: const Color.fromARGB(255, 83, 151, 73),
             direita: false,
           ),
 
@@ -64,7 +63,7 @@ class SobrePage extends StatelessWidget {
             imagem: 'assets/doisamigos.png',
             titulo: 'Fortalecer Comunidades',
             texto: 'Conectar doadores e recebedores, promovendo a solidariedade.',
-            cor: const Color(0xFFFFAA00),
+            cor: const Color.fromARGB(255, 255, 170, 0),
             direita: true,
           ),
 
@@ -74,7 +73,6 @@ class SobrePage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-
                 const Text(
                   'Sobre o Projeto',
                   style: TextStyle(
@@ -171,7 +169,6 @@ class SobrePage extends StatelessWidget {
     );
   }
 
-  // 🔧 MISSÃO
   static Widget _buildMissao({
     required String imagem,
     required String titulo,
@@ -184,22 +181,50 @@ class SobrePage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: direita
-              ? [cor.withOpacity(0.7), Colors.transparent]
-              : [Colors.transparent, cor.withOpacity(0.7)],
+          colors: [
+            const Color.fromARGB(109, 249, 213, 154),
+            cor,
+          ],
+          stops: const [0.25, 0.75],
+          begin: direita
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+          end: direita
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
         ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: direita
             ? [
-                Image.asset(imagem, width: 100),
+                Image.asset(
+                  imagem,
+                  width: 100,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(texto),
+                      Text(
+                        titulo,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        texto,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -209,13 +234,32 @@ class SobrePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(texto),
+                      Text(
+                        titulo,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        texto,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
-                Image.asset(imagem, width: 100),
+                Image.asset(
+                  imagem,
+                  width: 100,
+                ),
               ],
       ),
     );
