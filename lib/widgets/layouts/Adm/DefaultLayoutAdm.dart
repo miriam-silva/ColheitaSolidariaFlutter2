@@ -39,38 +39,63 @@ class _DefaultLayoutAdminState extends State<DefaultLayoutAdmin> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor:  Color(0xFFF5C25C), //  const Color(0xFFA50000)  Color.fromRGBO(249, 225, 178, 100)
-        title: const Text("Colheita Solidária"),
-        centerTitle: true,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      toolbarHeight: 90,
 
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: CircleAvatar(
-                backgroundImage: fotoPerfil.startsWith("http")
-                    ? NetworkImage(fotoPerfil)
-                    : AssetImage(fotoPerfil) as ImageProvider,
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            ),
+      flexibleSpace: Container(
+        padding: const EdgeInsets.only(top: 40),
+
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.6, 1.0],
+            colors: [
+              Color.fromRGBO(247, 205, 122, 1),
+              Color.fromRGBO(249, 225, 178, 1),
+            ],
           ),
-        ],
-      ),
-
-      drawer: const MeuDrawer(role: "admin"),
-
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: widget.child,
         ),
       ),
-    );
-  }
-}
+
+      title: const Text(
+        "Colheita Solidária",
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      centerTitle: true,
+
+      actions: [
+        Builder(
+          builder: (context) => IconButton(
+            icon: CircleAvatar(
+              backgroundImage: fotoPerfil.startsWith("http")
+                  ? NetworkImage(fotoPerfil)
+                  : AssetImage(fotoPerfil) as ImageProvider,
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
+      ],
+    ),
+
+    drawer: const MeuDrawer(role: "admin"),
+
+    body: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: widget.child,
+      ),
+    ),
+  );
+}}

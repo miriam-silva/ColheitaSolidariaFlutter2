@@ -131,7 +131,7 @@ class SobrePage extends StatelessWidget {
             alignment: WrapAlignment.center,
             spacing: 20,
             children: const [
-              _Membro(nome: 'Miriam', imagem: 'assets/miriam.jpg'),
+              _Membro(nome: 'Miriam', imagem: 'assets/miriam.jpeg'),
               _Membro(nome: 'Isadora', imagem: 'assets/isa.jpg'),
               _Membro(nome: 'Caroline', imagem: 'assets/carol.jpg'),
             ],
@@ -154,8 +154,7 @@ class SobrePage extends StatelessWidget {
             alignment: WrapAlignment.center,
             spacing: 20,
             children: const [
-              _Tech(nome: 'React', img: 'assets/react.png'),
-              _Tech(nome: 'Bootstrap', img: 'assets/bootstrap.png'),
+              _Tech(nome: 'Flutter', img: 'assets/flutter.png'),
               _Tech(nome: 'Firebase', img: 'assets/firebase.png'),
               _Tech(nome: 'Notion', img: 'assets/notion.png'),
               _Tech(nome: 'GitHub', img: 'assets/github.png'),

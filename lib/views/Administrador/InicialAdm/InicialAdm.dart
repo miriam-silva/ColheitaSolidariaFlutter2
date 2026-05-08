@@ -34,7 +34,7 @@ class InicialAdministrador extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color.fromRGBO(164, 37, 37, 1),
-        foregroundColor: Colors.white,
+        foregroundColor: Color.fromARGB(255, 255, 255, 255),
         padding: const EdgeInsets.all(20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),

@@ -142,11 +142,24 @@ class _MeuDrawerState extends State<MeuDrawer> {
 
     return Drawer(
       width: 300,
+      backgroundColor: const Color.fromARGB(255, 255, 254, 252),
       child: Column(
+        
         children: [
           Container(
+            
             width: double.infinity,
-            color:  const Color(0xFFA50000), //Color.fromRGBO(249, 225, 178, 100),
+            decoration: const BoxDecoration(
+            gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromRGBO(247, 205, 122, 1),
+            Color.fromARGB(255, 255, 254, 252),
+            
+    ],
+  ),
+),
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
@@ -163,14 +176,14 @@ class _MeuDrawerState extends State<MeuDrawer> {
                 Text(
                   nomeUsuario,
                   style: const TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: Color.fromARGB(255, 0, 0, 0),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   emailUsuario,
-                  style: const TextStyle(color: Color.fromARGB(179, 255, 255, 255)),
+                  style: const TextStyle(color: Color.fromARGB(179, 0, 0, 0)),
                 ),
               ],
             ),
@@ -213,7 +226,7 @@ class _MeuDrawerState extends State<MeuDrawer> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFA50000),
-                foregroundColor: Colors.white,
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                 minimumSize: const Size(double.infinity, 45),
               ),
               onPressed: logout,
