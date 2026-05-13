@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "781127490772-f0495h9hei9rqhqv90u4jv76v7c1tv10.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.colheitasolidaria_flutter",
+            "certificate_hash": "03433753df70dcbe7e301553485bf151afdb19da"
+          }
+        },
+        {
           "client_id": "781127490772-1n20ec95cjv11v88lnl48g7oel9pjipe.apps.googleusercontent.com",
           "client_type": 3
         }

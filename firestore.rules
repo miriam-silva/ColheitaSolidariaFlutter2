@@ -1,84 +1,9 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // 🔐 Usuário autenticado
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    // 👤 Dono do documento
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
-    // 👑 Admin
-    function isAdmin() {
-      return request.auth != null &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    // =========================
-    // 👤 USERS
-    // =========================
-   match /users/{userId} {
-
-  // ✅ criar só o próprio documento
-  allow create: if request.auth != null && request.auth.uid == userId;
-
-  // 🔐 leitura e edição só do dono
-  allow read, update: if request.auth.uid == userId;
-
-  // ❌ delete bloqueado
-  allow delete: if false;
-}
-
-    // =========================
-    // ⚙️ CONFIG
-    // =========================
-    match /config/{docId} {
-
-      // 🔓 usuário logado pode ler (necessário pro login)
-      allow read: if isAuthenticated();
-
-      // 👑 só admin escreve
-      allow write: if isAdmin();
-    }
-
-    // =========================
-    // 🍎 DOAÇÕES
-    // =========================
-    match /doacoes/{doacaoId} {
-
-      // 🌍 público pode ver
-      allow read: if true;
-
-      // 🔐 usuário logado cria
-      allow create: if isAuthenticated();
-
-      // 👑 só admin atualiza
-      allow update: if isAdmin();
-
-      allow delete: if false;
-    }
-
-    // =========================
-    // 📩 SOLICITAÇÕES
-    // =========================
-    match /solicitacoes/{solicitacaoId} {
-
-      // 🔐 criar
-      allow create: if isAuthenticated();
-
-      // 🔐 ler: dono ou admin
-      allow read: if isAuthenticated() &&
-        (isAdmin() || request.auth.uid == resource.data.usuarioId);
-
-      // 👑 admin atualiza
-      allow update: if isAdmin();
-
-      allow delete: if false;
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2026, 5, 17);
     }
   }
 }

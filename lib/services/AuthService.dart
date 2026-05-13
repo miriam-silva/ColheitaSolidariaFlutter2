@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
 
@@ -59,6 +59,8 @@ class AuthService {
 
       if (!userDoc.exists) {
 
+        await logout();
+
         return {
           "success": false,
           "error":
@@ -73,6 +75,8 @@ class AuthService {
       if (userData['role'] !=
           tipoUsuario) {
 
+        await logout();
+
         return {
           "success": false,
           "error":
@@ -85,6 +89,8 @@ class AuthService {
 
         if (userData['cnpj'] !=
             cnpj) {
+
+          await logout();
 
           return {
             "success": false,
@@ -102,6 +108,8 @@ class AuthService {
 
         if (!configDoc.exists) {
 
+          await logout();
+
           return {
             "success": false,
             "error":
@@ -118,6 +126,8 @@ class AuthService {
 
         if (!chaves.contains(
             chaveAcesso)) {
+
+          await logout();
 
           return {
             "success": false,
@@ -157,59 +167,41 @@ class AuthService {
 
     required String tipoUsuario,
 
+    bool cadastro = false,
+
   }) async {
 
     try {
 
-      /// GOOGLE SIGN IN
-      final GoogleSignIn
-          googleSignIn =
-          GoogleSignIn(
-        scopes: ['email'],
-      );
+      UserCredential
+          userCredential;
 
-      /// FORÇA ESCOLHA DE CONTA
-      await googleSignIn.signOut();
+      /// WEB
+      if (kIsWeb) {
 
-      /// ABRE CONTAS GOOGLE
-      final GoogleSignInAccount?
-          googleUser =
-          await googleSignIn
-              .signIn();
+        final googleProvider =
+            GoogleAuthProvider();
 
-      /// CANCELADO
-      if (googleUser == null) {
+        userCredential =
+            await _auth
+                .signInWithPopup(
+          googleProvider,
+        );
 
-        return {
-          "success": false,
-          "error":
-              "Login cancelado"
-        };
       }
 
-      /// TOKENS GOOGLE
-      final googleAuth =
-          await googleUser
-              .authentication;
+      /// MOBILE
+      else {
 
-      /// CREDENCIAL FIREBASE
-      final credential =
-          GoogleAuthProvider
-              .credential(
+        final googleProvider =
+            GoogleAuthProvider();
 
-        accessToken:
-            googleAuth.accessToken,
-
-        idToken:
-            googleAuth.idToken,
-      );
-
-      /// LOGIN FIREBASE
-      final userCredential =
-          await _auth
-              .signInWithCredential(
-        credential,
-      );
+        userCredential =
+            await _auth
+                .signInWithProvider(
+          googleProvider,
+        );
+      }
 
       final user =
           userCredential.user;
@@ -232,8 +224,19 @@ class AuthService {
               .doc(uid)
               .get();
 
-      /// CRIA USUÁRIO
-      if (!userDoc.exists) {
+      /// CADASTRO GOOGLE
+      if (cadastro) {
+
+        if (userDoc.exists) {
+
+          await logout();
+
+          return {
+            "success": false,
+            "error":
+                "Conta já cadastrada"
+          };
+        }
 
         await _firestore
             .collection('users')
@@ -254,39 +257,66 @@ class AuthService {
 
           "cpf": "",
 
+          "cnpj": null,
+
+          "endereco": "",
+
           "dataNascimento": "",
 
           "createdAt":
               FieldValue
                   .serverTimestamp(),
         });
-      }
 
-      /// BUSCA NOVAMENTE
-      final updatedDoc =
-          await _firestore
-              .collection('users')
-              .doc(uid)
-              .get();
-
-      final userData =
-          updatedDoc.data()!;
-
-      /// ROLE
-      if (userData["role"] !=
-          tipoUsuario) {
+        final createdDoc =
+            await _firestore
+                .collection('users')
+                .doc(uid)
+                .get();
 
         return {
-          "success": false,
-          "error":
-              "Tipo de usuário incorreto"
+          "success": true,
+          "data":
+              createdDoc.data(),
         };
       }
 
-      return {
-        "success": true,
-        "data": userData,
-      };
+      /// LOGIN GOOGLE
+      else {
+
+        /// NÃO CADASTRADO
+        if (!userDoc.exists) {
+
+          await logout();
+
+          return {
+            "success": false,
+            "error":
+                "Conta não cadastrada. Faça o cadastro primeiro."
+          };
+        }
+
+        final userData =
+            userDoc.data()!;
+
+        /// ROLE
+        if (userData["role"] !=
+            tipoUsuario) {
+
+          await logout();
+
+          return {
+            "success": false,
+            "error":
+                "Tipo de usuário incorreto"
+          };
+        }
+
+        return {
+          "success": true,
+          "data": userData,
+        };
+      }
 
     } on FirebaseAuthException catch (e) {
 
@@ -299,6 +329,9 @@ class AuthService {
 
     } catch (e) {
 
+      debugPrint(
+          "ERRO GOOGLE LOGIN: $e");
+
       return {
         "success": false,
         "error":
@@ -309,8 +342,6 @@ class AuthService {
 
   /// LOGOUT
   Future<void> logout() async {
-
-    await GoogleSignIn().signOut();
 
     await FirebaseAuth.instance
         .signOut();
