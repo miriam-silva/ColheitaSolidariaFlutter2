@@ -20,6 +20,7 @@ dependencies:
   firebase_core: ^4.6.0
   firebase_auth: ^6.3.0
   cloud_firestore: ^6.2.0
+  google_sign_in: ^6.2.1
 
   provider: ^6.1.2
   supabase_flutter: ^2.5.6

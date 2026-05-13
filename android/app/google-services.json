@@ -12,7 +12,20 @@
           "package_name": "com.example.colheitasolidaria_flutter"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "781127490772-1pgs1mmnishush3ndlql38p957nke101.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.colheitasolidaria_flutter",
+            "certificate_hash": "359fa05fb2532d2af7b587be317c7a93b0055fe9"
+          }
+        },
+        {
+          "client_id": "781127490772-1n20ec95cjv11v88lnl48g7oel9pjipe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCx1h_YczpRRSzckrEDespDnWfnRWMTe8o"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781127490772-1n20ec95cjv11v88lnl48g7oel9pjipe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "781127490772-8vvln0unq7jb01rhno7jnd025sjfjpfn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.colheitasolidariaFlutter"
+              }
+            }
+          ]
         }
       }
     }
