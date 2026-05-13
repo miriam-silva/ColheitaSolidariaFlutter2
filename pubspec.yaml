@@ -32,6 +32,7 @@ dependencies:
   
   pdf: ^3.11.0
   printing: ^5.13.0
+  openfoodfacts: ^3.30.2
 
 dev_dependencies:
   flutter_native_splash: ^2.4.0

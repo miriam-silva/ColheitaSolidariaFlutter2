@@ -40,6 +40,7 @@ import 'views/Administrador/Pedidos/PedidosAdm.dart';
 
 /// DRAWER
 import 'widgets/Header/Drawer/AtualizarFotoPerfil.dart';
+import 'package:openfoodfacts/openfoodfacts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +51,10 @@ void main() async {
     url: 'https://jdeivuuyeclualawjudt.supabase.co',
     anonKey: 'sb_publishable_vCQz8CHhxOFvNguQUz8XzA_VPxAWvhi',
   );
-
+  
+   OpenFoodAPIConfiguration.userAgent = UserAgent(
+  name: 'colheita_solidaria',
+);
   runApp(
     ChangeNotifierProvider(
       create: (_) => DoacoesContext(),
