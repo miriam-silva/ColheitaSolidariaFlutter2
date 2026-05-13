@@ -468,7 +468,6 @@ class _MeuDrawerState extends State<MeuDrawer> {
             "label": "Registrar doações",
             "route": "/colaborador/Registrardoacao",
           },
-          {"label": "Minhas doações", "route": "/colaborador/MinhasDoacoes"},
           {"label": "Editar cadastro", "action": abrirEditarCadastro},
           {"label": "Alterar foto de perfil", "action": escolherImagem},
         ];

@@ -37,17 +37,79 @@ class _InicialColaboradorState extends State<InicialColaborador> {
     });
   }
 
+  Future<bool> confirmarSaida(BuildContext context) async {
+    final result = await showDialog(
+      context: context,
+
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+
+          title: const Text(
+            "Sair da conta?",
+
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+
+          content: const Text(
+            "Você está saindo da área do colaborador. Para acessar novamente será necessário realizar login.",
+          ),
+
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA50000),
+
+                foregroundColor: Colors.white,
+              ),
+
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+
+              child: const Text("Cancelar"),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF276772),
+
+                foregroundColor: Colors.white,
+              ),
+
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+
+                if (!context.mounted) {
+                  return;
+                }
+
+                Navigator.pop(context, true);
+              },
+
+              child: const Text("Sair"),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final doacoesContext = Provider.of<DoacoesContext>(context);
 
     final doacoes = doacoesContext.doacoes;
+
     final carregando = doacoesContext.carregando;
 
     final listaOrdenada = [...doacoes];
 
     listaOrdenada.sort((a, b) {
       final dataA = a["createdAt"];
+
       final dataB = b["createdAt"];
 
       if (dataA == null || dataB == null) {
@@ -57,77 +119,109 @@ class _InicialColaboradorState extends State<InicialColaborador> {
       return dataA.compareTo(dataB);
     });
 
-    return DefaultLayout4(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 220,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "/colaborador/Registrardoacao");
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                elevation: 2,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 18,
-                  horizontal: 20,
+    return PopScope(
+      canPop: false,
+
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        final sair = await confirmarSaida(context);
+
+        if (sair && context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
+        }
+      },
+
+      child: DefaultLayout4(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: [
+            SizedBox(
+              width: 220,
+
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/colaborador/Registrardoacao");
+                },
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+
+                  foregroundColor: Colors.black,
+
+                  elevation: 2,
+
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 20,
+                  ),
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(60),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(60),
+
+                child: const Text(
+                  "Realizar doação",
+
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Container(
+              width: double.infinity,
+
+              padding: const EdgeInsets.all(20),
+
+              decoration: BoxDecoration(
+                color: const Color(0xFFF6C973),
+
+                border: Border.all(color: const Color(0xFFC1554C), width: 5),
+              ),
+
               child: const Text(
-                "Realizar doação",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                "Minhas doações:",
+
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
-          ),
 
-          const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF6C973),
-              border: Border.all(color: const Color(0xFFC1554C), width: 5),
-            ),
-            child: const Text(
-              "Minhas doações:",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-          ),
+            if (carregando)
+              const Center(child: CircularProgressIndicator())
+            else if (doacoes.isEmpty)
+              const Center(
+                child: Text(
+                  "Nenhuma doação foi feita",
 
-          const SizedBox(height: 30),
+                  style: TextStyle(
+                    color: Color(0xFFA18654),
 
-          if (carregando)
-            const Center(child: CircularProgressIndicator())
-          else if (doacoes.isEmpty)
-            const Center(
-              child: Text(
-                "Nenhuma doação foi feita",
-                style: TextStyle(
-                  color: Color(0xFFA18654),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
+                    fontSize: 22,
+
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
+              )
+            else
+              Column(
+                children: listaOrdenada.asMap().entries.map((entry) {
+                  final index = entry.key;
+
+                  final doacao = entry.value;
+
+                  return CardHistoricoDoacao(index: index, doacao: doacao);
+                }).toList(),
               ),
-            )
-          else
-            Column(
-              children: listaOrdenada.asMap().entries.map((entry) {
-                final index = entry.key;
-                final doacao = entry.value;
 
-                return CardHistoricoDoacao(index: index, doacao: doacao);
-              }).toList(),
-            ),
-
-          const SizedBox(height: 40),
-        ],
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }

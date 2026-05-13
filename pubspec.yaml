@@ -52,6 +52,9 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/loguinho.png"
+  web:
+    generate: true
+    image_path: "assets/loguinho.png"
 
 flutter_native_splash:
   color: "#F9E1B2"
