@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [Color.fromARGB(14, 245, 194, 92), Color(0xFFF5C25C)],
                 stops: [0.05, 0.95],
                 begin: Alignment.centerLeft,

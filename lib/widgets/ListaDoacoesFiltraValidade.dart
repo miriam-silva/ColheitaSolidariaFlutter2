@@ -71,8 +71,7 @@ class _ListaDoacoesFiltraValidadeState
                 validade = DateTime.parse(valor.toString());
               }
 
-              return validade.isAfter(hoje) ||
-                  validade.isAtSameMomentAs(hoje);
+              return validade.isAfter(hoje) || validade.isAtSameMomentAs(hoje);
             } catch (e) {
               return true;
             }
@@ -108,9 +107,7 @@ class _ListaDoacoesFiltraValidadeState
           padding: EdgeInsets.only(top: 30),
           child: Text(
             "Nenhuma doação disponível no momento.",
-            style: TextStyle(
-              fontSize: 16,
-            ),
+            style: TextStyle(fontSize: 16),
           ),
         ),
       );
@@ -124,7 +121,9 @@ class _ListaDoacoesFiltraValidadeState
           id: id,
           imagemUrl: doacao['imagemUrl'],
           nome: doacao['nome'],
-          validade: doacao['validade']?.toString(),
+          validade: doacao['validade'] is Timestamp
+              ? (doacao['validade'] as Timestamp).toDate().toString()
+              : doacao['validade']?.toString(),
           descricao: doacao['descricao'],
           selecionado: widget.selecionados.contains(id),
           onToggle: () {

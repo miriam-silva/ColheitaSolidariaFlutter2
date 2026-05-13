@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../widgets/LoadingSpinner.dart';
+import '../../../widgets/Utils/Validacao.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -33,8 +35,10 @@ class _CadastroPageState extends State<CadastroPage> {
     switch (activeTab) {
       case "admin":
         return "Administrador";
+
       case "colaborador":
         return "Colaborador";
+
       default:
         return "";
     }
@@ -44,85 +48,94 @@ class _CadastroPageState extends State<CadastroPage> {
     switch (tab) {
       case "admin":
         return "ADMINISTRADOR";
+
       case "colaborador":
         return "COLABORADOR";
+
       default:
         return "";
     }
   }
 
-  bool validarCPF(String cpf) => cpf.length >= 11;
-  bool validarCNPJ(String cnpj) => cnpj.length >= 14;
-
   void handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (senha.text != confirmarSenha.text) {
-      _showError("As senhas não coincidem!");
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     final tipo = activeTab;
 
-    if (tipo == "admin" && !validarCNPJ(cnpj.text)) {
-      _showError("CNPJ inválido!");
+    if (tipo == "admin" &&
+        Validacao.validarCNPJ(cnpj.text) != null) {
+      _showError("CNPJ inválido");
       return;
     }
 
-    if (tipo == "colaborador" && !validarCPF(cpf.text)) {
-      _showError("CPF inválido!");
+    if (tipo == "colaborador" &&
+        Validacao.validarCPF(cpf.text) != null) {
+      _showError("CPF inválido");
       return;
     }
 
-    setState(() => loading = true);
+    setState(() {
+      loading = true;
+    });
 
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: email.text,
-        password: senha.text,
+        email: email.text.trim(),
+        password: senha.text.trim(),
       );
 
       final user = userCredential.user;
 
-      if (user == null) throw Exception("Usuário não criado");
-
-      await user.reload();
-      await user.getIdToken(true);
-
-      final currentUser = _auth.currentUser;
-
-      if (currentUser == null) {
-        throw Exception("Usuário não autenticado");
+      if (user == null) {
+        throw Exception("Usuário não criado");
       }
 
-      await _firestore.collection("users").doc(currentUser.uid).set({
-        "nome": nome.text,
-        "email": email.text,
-        "telefone": telefone.text,
-        "endereco": endereco.text,
-        "dataNascimento": dataNascimento.text,
+      await _firestore.collection("users").doc(user.uid).set({
+        "nome": nome.text.trim(),
+        "email": email.text.trim(),
+        "telefone": telefone.text.trim(),
+        "endereco": endereco.text.trim(),
+        "dataNascimento": dataNascimento.text.trim(),
         "role": tipo,
-        "cnpj": tipo == "admin" ? cnpj.text : null,
-        "cpf": tipo == "colaborador" ? cpf.text : null,
+        "cnpj": tipo == "admin"
+            ? cnpj.text.trim()
+            : null,
+        "cpf": tipo == "colaborador"
+            ? cpf.text.trim()
+            : null,
       });
 
-      setState(() => loading = false);
+      setState(() {
+        loading = false;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cadastro realizado com sucesso!")),
+        const SnackBar(
+          content: Text(
+            "Cadastro realizado com sucesso!",
+          ),
+        ),
       );
 
       Navigator.pushNamed(context, "/login");
     } catch (e) {
-      setState(() => loading = false);
-      _showError("Erro ao cadastrar");
+      setState(() {
+        loading = false;
+      });
+
+      _showError("Erro ao cadastrar usuário");
     }
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+      ),
+    );
   }
 
   void changeTab(String tab) {
@@ -155,16 +168,24 @@ class _CadastroPageState extends State<CadastroPage> {
             margin: const EdgeInsets.all(16),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                bool isMobile = constraints.maxWidth < 768;
+                bool isMobile =
+                    constraints.maxWidth < 768;
 
                 return isMobile
                     ? Column(
-                        children: [_buildHero(isMobile), _buildForm(isMobile)],
+                        children: [
+                          _buildHero(isMobile),
+                          _buildForm(isMobile),
+                        ],
                       )
                     : Row(
                         children: [
-                          Expanded(child: _buildHero(isMobile)),
-                          Expanded(child: _buildForm(isMobile)),
+                          Expanded(
+                            child: _buildHero(isMobile),
+                          ),
+                          Expanded(
+                            child: _buildForm(isMobile),
+                          ),
                         ],
                       );
               },
@@ -203,13 +224,20 @@ class _CadastroPageState extends State<CadastroPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
+
           SizedBox(height: 20),
+
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
             child: Text(
               "Faça o seu cadastro e ajude a contribuir para um futuro mais sustentável e solidário.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
             ),
           ),
         ],
@@ -231,7 +259,8 @@ class _CadastroPageState extends State<CadastroPage> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceAround,
             children: [
               _buildTab("admin"),
               _buildTab("colaborador"),
@@ -242,7 +271,10 @@ class _CadastroPageState extends State<CadastroPage> {
 
           Text(
             "Cadastro ${getTitulo()}",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
 
           const SizedBox(height: 20),
@@ -257,39 +289,102 @@ class _CadastroPageState extends State<CadastroPage> {
             key: _formKey,
             child: Column(
               children: [
-                _input(nome, "Nome completo"),
+                /// NOME
+                _input(
+                  nome,
+                  "Nome completo",
+                  validator: Validacao.validarNome,
+                ),
 
+                /// CPF / CNPJ
                 if (activeTab == "admin")
-                  _input(cnpj, "CNPJ")
+                  _input(
+                    cnpj,
+                    "CNPJ",
+                    validator: Validacao.validarCNPJ,
+                  )
                 else
-                  _input(cpf, "CPF"),
+                  _input(
+                    cpf,
+                    "CPF",
+                    validator: Validacao.validarCPF,
+                  ),
 
+                /// DATA
                 GestureDetector(
                   onTap: _selectDate,
                   child: AbsorbPointer(
-                    child: _input(dataNascimento, "Data de nascimento"),
+                    child: _input(
+                      dataNascimento,
+                      "Data de nascimento",
+                      validator: Validacao.validarIdade,
+                    ),
                   ),
                 ),
 
-                _input(email, "E-mail"),
-                _input(telefone, "Telefone"),
-                _input(endereco, "Endereço"),
-                _input(senha, "Senha", obscure: true),
-                _input(confirmarSenha, "Confirmar senha", obscure: true),
+                /// EMAIL
+                _input(
+                  email,
+                  "E-mail",
+                  validator: Validacao.validarEmail,
+                ),
+
+                /// TELEFONE
+                _input(
+                  telefone,
+                  "Telefone",
+                  validator: Validacao.validarTelefone,
+                ),
+
+                /// ENDEREÇO
+                _input(
+                  endereco,
+                  "Endereço",
+                  validator: Validacao.validarEndereco,
+                ),
+
+                /// SENHA
+                _input(
+                  senha,
+                  "Senha",
+                  obscure: true,
+                  validator: Validacao.validarSenha,
+                ),
+
+                /// CONFIRMAR SENHA
+                _input(
+                  confirmarSenha,
+                  "Confirmar senha",
+                  obscure: true,
+                  validator: (value) {
+                    return Validacao
+                        .validarConfirmacaoSenha(
+                      senha.text,
+                      value ?? "",
+                    );
+                  },
+                ),
 
                 const SizedBox(height: 20),
 
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: loading ? null : handleSubmit,
+                    onPressed:
+                        loading ? null : handleSubmit,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA42525),
+                      backgroundColor:
+                          const Color(0xFFA42525),
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 45),
+                      minimumSize: const Size(
+                        double.infinity,
+                        45,
+                      ),
                     ),
                     child: Text(
-                      loading ? "Carregando..." : "Cadastrar",
+                      loading
+                          ? "Carregando..."
+                          : "Cadastrar",
                     ),
                   ),
                 ),
@@ -297,14 +392,30 @@ class _CadastroPageState extends State<CadastroPage> {
                 const SizedBox(height: 20),
 
                 TextButton(
-                  onPressed: () => Navigator.pushNamed(context, "/login"),
-                  style: TextButton.styleFrom(foregroundColor: Colors.black),
-                  child: const Text("Já possui cadastro? Faça login"),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      "/login",
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.black,
+                  ),
+                  child: const Text(
+                    "Já possui cadastro? Faça login",
+                  ),
                 ),
 
                 TextButton(
-                  onPressed: () => Navigator.pushNamed(context, "/home"),
-                  style: TextButton.styleFrom(foregroundColor: Colors.black),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      "/home",
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.black,
+                  ),
                   child: const Text("Voltar"),
                 ),
               ],
@@ -317,6 +428,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
   Widget _buildTab(String tab) {
     final isActive = activeTab == tab;
+
     final label = getLabelTab(tab);
 
     return GestureDetector(
@@ -327,15 +439,20 @@ class _CadastroPageState extends State<CadastroPage> {
           Text(
             label,
             style: TextStyle(
-              color: isActive ? const Color(0xFFA42525) : Colors.grey,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              color: isActive
+                  ? const Color(0xFFA42525)
+                  : Colors.grey,
+              fontWeight: isActive
+                  ? FontWeight.bold
+                  : FontWeight.normal,
             ),
           ),
+
           if (isActive)
             Container(
               margin: const EdgeInsets.only(top: 5),
               height: 3,
-              width: label.length * 8.0, // 🔥 largura baseada no texto
+              width: label.length * 8.0,
               color: const Color(0xFFA42525),
             ),
         ],
@@ -343,19 +460,23 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 
-  Widget _input(TextEditingController controller, String hint,
-      {bool obscure = false}) {
+  Widget _input(
+    TextEditingController controller,
+    String hint, {
+    bool obscure = false,
+    String? Function(String?)? validator,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         controller: controller,
         obscureText: obscure,
-        validator: (value) =>
-            value == null || value.isEmpty ? "Campo obrigatório" : null,
+        validator: validator,
         decoration: InputDecoration(
           hintText: hint,
           filled: true,
           fillColor: const Color(0xFFD3D2D2),
+          errorMaxLines: 2,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5),
             borderSide: BorderSide.none,

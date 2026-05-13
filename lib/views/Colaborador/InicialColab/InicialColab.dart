@@ -44,6 +44,19 @@ class _InicialColaboradorState extends State<InicialColaborador> {
     final doacoes = doacoesContext.doacoes;
     final carregando = doacoesContext.carregando;
 
+    final listaOrdenada = [...doacoes];
+
+    listaOrdenada.sort((a, b) {
+      final dataA = a["createdAt"];
+      final dataB = b["createdAt"];
+
+      if (dataA == null || dataB == null) {
+        return 0;
+      }
+
+      return dataA.compareTo(dataB);
+    });
+
     return DefaultLayout4(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,10 +65,7 @@ class _InicialColaboradorState extends State<InicialColaborador> {
             width: 220,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  "/colaborador/Registrardoacao",
-                );
+                Navigator.pushNamed(context, "/colaborador/Registrardoacao");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -71,10 +81,7 @@ class _InicialColaboradorState extends State<InicialColaborador> {
               ),
               child: const Text(
                 "Realizar doação",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ),
@@ -86,26 +93,18 @@ class _InicialColaboradorState extends State<InicialColaborador> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFFF6C973),
-              border: Border.all(
-                color: const Color(0xFFC1554C),
-                width: 5,
-              ),
+              border: Border.all(color: const Color(0xFFC1554C), width: 5),
             ),
             child: const Text(
               "Minhas doações:",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
 
           const SizedBox(height: 30),
 
           if (carregando)
-            const Center(
-              child: CircularProgressIndicator(),
-            )
+            const Center(child: CircularProgressIndicator())
           else if (doacoes.isEmpty)
             const Center(
               child: Text(
@@ -119,14 +118,11 @@ class _InicialColaboradorState extends State<InicialColaborador> {
             )
           else
             Column(
-              children: doacoes.asMap().entries.map((entry) {
+              children: listaOrdenada.asMap().entries.map((entry) {
                 final index = entry.key;
                 final doacao = entry.value;
 
-                return CardHistoricoDoacao(
-                  index: index,
-                  doacao: doacao,
-                );
+                return CardHistoricoDoacao(index: index, doacao: doacao);
               }).toList(),
             ),
 
