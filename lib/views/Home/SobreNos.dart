@@ -17,6 +17,7 @@ class SobrePage extends StatelessWidget {
               children: [
                 Image.asset('assets/sacola.png', width: 120),
                 const SizedBox(width: 10),
+
                 const Expanded(
                   child: Text(
                     'No Colheita Solidária, somos uma equipe dedicada a reduzir o desperdício de alimentos e combater a fome.\n\n'
@@ -54,7 +55,8 @@ class SobrePage extends StatelessWidget {
           _buildMissao(
             imagem: 'assets/maos.png',
             titulo: 'Combater a Fome',
-            texto: 'Fornecer alimentos frescos e nutritivos para quem mais precisa.',
+            texto:
+                'Fornecer alimentos frescos e nutritivos para quem mais precisa.',
             cor: const Color.fromARGB(255, 83, 151, 73),
             direita: false,
           ),
@@ -62,7 +64,8 @@ class SobrePage extends StatelessWidget {
           _buildMissao(
             imagem: 'assets/doisamigos.png',
             titulo: 'Fortalecer Comunidades',
-            texto: 'Conectar doadores e recebedores, promovendo a solidariedade.',
+            texto:
+                'Conectar doadores e recebedores, promovendo a solidariedade.',
             cor: const Color.fromARGB(255, 255, 170, 0),
             direita: true,
           ),
@@ -150,15 +153,43 @@ class SobrePage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 20,
-            children: const [
-              _Tech(nome: 'Flutter', img: 'assets/flutter.png'),
-              _Tech(nome: 'Firebase', img: 'assets/firebase.png'),
-              _Tech(nome: 'Notion', img: 'assets/notion.png'),
-              _Tech(nome: 'GitHub', img: 'assets/github.png'),
-              _Tech(nome: 'Figma', img: 'assets/figma.png'),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  _Tech(
+                    nome: 'Flutter',
+                    img: 'assets/flutter.png',
+                    tamanho: 50,
+                  ),
+
+                  SizedBox(width: 20),
+
+                  _Tech(
+                    nome: 'Firebase',
+                    img: 'assets/firebase.png',
+                    tamanho: 62,
+                  ),
+
+                  SizedBox(width: 20),
+
+                  _Tech(nome: 'Notion', img: 'assets/notion.png', tamanho: 80),
+                ],
+              ),
+
+              SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  _Tech(nome: 'GitHub', img: 'assets/github.png', tamanho: 85),
+
+                  SizedBox(width: 20),
+
+                  _Tech(nome: 'Figma', img: 'assets/figma.png', tamanho: 100),
+                ],
+              ),
             ],
           ),
 
@@ -180,28 +211,19 @@ class SobrePage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            const Color.fromARGB(109, 249, 213, 154),
-            cor,
-          ],
+          colors: [const Color.fromARGB(109, 249, 213, 154), cor],
           stops: const [0.25, 0.75],
-          begin: direita
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
-          end: direita
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+          begin: direita ? Alignment.centerLeft : Alignment.centerRight,
+          end: direita ? Alignment.centerRight : Alignment.centerLeft,
         ),
-        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: direita
             ? [
-                Image.asset(
-                  imagem,
-                  width: 100,
-                ),
+                Image.asset(imagem, width: 100),
+
                 const SizedBox(width: 10),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -215,7 +237,9 @@ class SobrePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(height: 8),
+
                       Text(
                         texto,
                         textAlign: TextAlign.right,
@@ -242,7 +266,9 @@ class SobrePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(height: 8),
+
                       Text(
                         texto,
                         textAlign: TextAlign.left,
@@ -254,11 +280,10 @@ class SobrePage extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 const SizedBox(width: 10),
-                Image.asset(
-                  imagem,
-                  width: 100,
-                ),
+
+                Image.asset(imagem, width: 100),
               ],
       ),
     );
@@ -275,11 +300,10 @@ class _Membro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: AssetImage(imagem),
-        ),
+        CircleAvatar(radius: 40, backgroundImage: AssetImage(imagem)),
+
         const SizedBox(height: 5),
+
         Text(nome),
       ],
     );
@@ -289,17 +313,33 @@ class _Membro extends StatelessWidget {
 class _Tech extends StatelessWidget {
   final String nome;
   final String img;
+  final double tamanho;
 
-  const _Tech({required this.nome, required this.img});
+  const _Tech({required this.nome, required this.img, required this.tamanho});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Image.asset(img, width: 50),
-        const SizedBox(height: 5),
-        Text(nome),
-      ],
+    return SizedBox(
+      width: 80,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 60,
+            child: Center(
+              child: Image.asset(
+                img,
+                width: tamanho,
+                height: tamanho,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(nome, textAlign: TextAlign.center),
+        ],
+      ),
     );
   }
 }

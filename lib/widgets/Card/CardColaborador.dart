@@ -22,8 +22,8 @@ class ColaboradorCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: direita
-              ? [Colors.transparent, const Color(0xFFE5A016)]
-              : [const Color(0xFFE5A016), Colors.transparent],
+              ? [Color.fromARGB(14, 245, 194, 92), Color(0xFFF5C25C)]
+              :  [Color(0xFFF5C25C), Color.fromARGB(14, 245, 194, 92) ],
         ),
       ),
       child: Row(
@@ -37,6 +37,7 @@ class ColaboradorCard extends StatelessWidget {
                         nome,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 18,
                           color: Color(0xFF5D0101),
                         ),
                       ),
@@ -59,6 +60,7 @@ class ColaboradorCard extends StatelessWidget {
                         nome,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 18,
                           color: Color(0xFF5D0101),
                         ),
                       ),

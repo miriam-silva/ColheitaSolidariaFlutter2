@@ -46,21 +46,21 @@ class ColaboradoresPage extends StatelessWidget {
 
           ColaboradorCard(
             nome: 'Agricultor Roberto',
-            texto: 'Roberto Rodriguez ajudou doando verduras...',
+            texto: 'Roberto Rodriguez ajudou doando verduras da sua horta! Como: Alface tomates e pimentões',
             imagem: 'assets/fotocolaborador.png',
             direita: false,
           ),
 
           ColaboradorCard(
             nome: 'Agricultora Márcia',
-            texto: 'Márcia Gonzales ajudou doando muitos alimentos...',
+            texto: 'Márcia Gonzales ajudou doando muitos alimentos de sua própria lavoura! Alimentos como: Arroz, milho e feijão.',
             imagem: 'assets/Fotocolaboradora.png',
             direita: true,
           ),
 
           ColaboradorCard(
             nome: 'Fazendeiro Carlos',
-            texto: 'Carlos Silva contribuiu generosamente...',
+            texto: 'Carlos Silva contribuiu generosamente doando muitos alimentos de sua própria fazenda! Alimentos como: batata, cenoura e tomate.',
             imagem: 'assets/fotocolaborador.png',
             direita: false,
           ),

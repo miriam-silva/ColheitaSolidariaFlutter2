@@ -40,16 +40,17 @@ class _NavbarWidgetState extends State<NavbarWidget> {
               const SizedBox(width: 0),
               if (menuAberto)
                 Expanded(
-                  
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _menuItem(context, 'Home', '/home'),
-                      _menuItem(context, 'Sobre nós', '/sobrenos'),
-                      _menuItem(context, 'Colaboradores', '/colaboradores'),
-                      _menuItem(context, 'Como ajudar?', '/comoajudar'),
-                      _menuItem(context, 'Contato', '/contato'),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 48),
+                    child: Column(
+                      children: [
+                        _menuItem(context, 'Home', '/home'),
+                        _menuItem(context, 'Sobre nós', '/sobrenos'),
+                        _menuItem(context, 'Colaboradores', '/colaboradores'),
+                        _menuItem(context, 'Como ajudar?', '/comoajudar'),
+                        _menuItem(context, 'Contato', '/contato'),
+                      ],
+                    ),
                   ),
                 ),
             ],

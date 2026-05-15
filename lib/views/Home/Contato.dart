@@ -9,7 +9,6 @@ class ContatoPage extends StatelessWidget {
     return DefaultLayout(
       child: Column(
         children: [
-
           const SizedBox(height: 20),
 
           const Text(
@@ -36,20 +35,27 @@ class ContatoPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-
                 TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Primeiro nome',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 10),
 
                 TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Último sobrenome',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
 
@@ -57,9 +63,13 @@ class ContatoPage extends StatelessWidget {
 
                 TextField(
                   maxLines: 3,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     labelText: 'Assunto',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
 
@@ -68,13 +78,17 @@ class ContatoPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFA50000),
                       ),
                       onPressed: () {},
-                      child: const Text('Cancelar'),
+                      child: const Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
 
                     const SizedBox(width: 10),
@@ -84,7 +98,12 @@ class ContatoPage extends StatelessWidget {
                         backgroundColor: const Color(0xFF276772),
                       ),
                       onPressed: () {},
-                      child: const Text('Enviar'),
+                      child: const Text(
+                        'Enviar',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -111,12 +130,13 @@ class ContatoPage extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-
               _contatoCard(
                 titulo: 'Instagram',
-                imagem: 'assets/icon instagram.png',
-                texto: '@Colheita.solidaria',
+                imagem: 'assets/instabranco.png',
+                texto: '@colheita.solidaria',
                 cor: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
                     Color(0xFFC13584),
                     Color(0xFFFF2D53),
@@ -127,9 +147,11 @@ class ContatoPage extends StatelessWidget {
 
               _contatoCard(
                 titulo: 'Email',
-                imagem: 'assets/icon email.png',
+                imagem: 'assets/emailbranco.png',
                 texto: 'colheitasolidariafatec@gmail.com',
                 cor: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
                     Color(0xFF0051FF),
                     Color(0xFFABC0F0),
@@ -139,9 +161,11 @@ class ContatoPage extends StatelessWidget {
 
               _contatoCard(
                 titulo: 'WhatsApp',
-                imagem: 'assets/icone whats.png',
+                imagem: 'assets/whatsbranco.png',
                 texto: '(16) 2359-9851',
                 cor: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
                     Color(0xFF0FB40A),
                     Color(0xFFA9EC8A),
@@ -153,13 +177,26 @@ class ContatoPage extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          const Text(
-            'A equipe da Colheita Solidária agradece o seu contato!!',
+          RichText(
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF5D0101),
+            text: const TextSpan(
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              children: [
+                TextSpan(
+                  text: 'A equipe da Colheita Solidária\n',
+                ),
+
+                TextSpan(
+                  text: 'agradece o seu contato!!',
+                  style: TextStyle(
+                    color: Color(0xFF5D0101),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -183,29 +220,43 @@ class ContatoPage extends StatelessWidget {
     required Gradient cor,
   }) {
     return Container(
-      width: 250,
+      width: 320,
+      height: 230,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: cor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             titulo,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          Image.asset(
+            imagem,
+            width: 100,
+          ),
+
+          const SizedBox(height: 15),
+
+          Text(
+            texto,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
-          ),
-          const SizedBox(height: 10),
-          Image.asset(imagem, width: 50),
-          const SizedBox(height: 10),
-          Text(
-            texto,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.black),
           ),
         ],
       ),

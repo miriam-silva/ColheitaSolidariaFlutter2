@@ -430,7 +430,7 @@ class _GerenciarUsuariosPageState
                   DropdownButtonFormField<
                       String>(
 
-                value:
+                initialValue:
                     filtroSelecionado,
 
                 decoration:
@@ -530,7 +530,7 @@ class _GerenciarUsuariosPageState
                   DropdownButtonFormField<
                       String>(
 
-                value:
+                initialValue:
                     ordenacaoSelecionada,
 
                 decoration:
